@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>八音盒</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+           var currentAudio = null;
+
+            function playAudio(audioId) {
+                var audio = document.getElementById(audioId);
+                    if (currentAudio) {
+                    currentAudio.pause();
+                    }
+                    currentAudio = audio;
+                    audio.play();
+                    }
+    </script>
+</head>
+<body>
+    <header>
+        <ul class="ys-head">
+            <li><a href="index.html">首页</a></li>  
+            <li><a href="bayinhe.html">八音盒</a></li>  
+            <li><a href="shop.html">商城</a></li>  
+            <li><a href="https://ys.mihoyo.com/cloud/#/">云原神</a></li>  
+            <li><a href="shengyiwu.html">圣遗物双暴计算</a></li>  
+            <li><a href="exp.html">我还要多久升冒险等级？</a></li>
+        </ul>
+    </header>
+    <nav class="banner">
+        <img src="images/bann.png" alt="">
+    </nav>
+    <div>
+        <h1>八音盒</h1>
+        <div class="shengyiwu-list">
+            <h3>此处有大部分地区和场景的战斗音乐：</h3>
+          
+            <p>蒙德：</p>
+            <p>1：</p>
+            <audio id="mengde1" controls src="music/mengde1.mp3"></audio>
+          
+            <p>2：</p>
+            <audio id="mengde2" controls src="music/mengde2.mp3"></audio>
+            
+            <p>雪山：</p>
+            <audio id="liyue3" controls src="music/xueshan.mp3"></audio>
+            <p>璃月：</p>
+            <p>1：</p>
+            <audio id="liyue1" controls src="music/liyue1.mp3"></audio>
+          
+            <p>2：</p>
+            <audio id="liyue2" controls src="music/liyue2.mp3"></audio>
+          
+            <p>3：</p>
+            <audio id="liyue3" controls src="music/liyue3.mp3"></audio>
+            <p>稻妻：</p>
+            <p>1：</p>
+            <audio id="daoqi1" controls src="music/daoqi1.mp3"></audio>
+          
+            <p>2：</p>
+            <audio id="daoqi2" controls src="music/daoqi2.mp3"></audio>
+          
+            <p>3：</p>
+            <audio id="daoqi3" controls src="music/daoqi3.mp3"></audio>
+            <p>须弥：</p>
+            <p>1：</p>
+            <audio id="xumi1" controls src="music/xumi1.mp3"></audio>
+          
+            <p>2：</p>
+            <audio id="xumi2" controls src="music/xumi2.mp3"></audio>
+          
+            <p>3：</p>
+            <audio id="xumi3" controls src="music/xumi3.mp3"></audio>
+            <p>枫丹：</p>
+            <p>1：</p>
+            <audio id="fengdan1" controls src="music/fengdan1.mp3"></audio>
+          
+            <p>2：</p>
+            <audio id="fengdan2" controls src="music/fengdan2.mp3"></audio>
+          
+            <p>3：</p>
+            <audio id="fengdan3" controls src="music/fengdan3.mp3"></audio>
+            <p>渊下宫：</p>
+            <p>1：</p>
+            <audio id="yuanxiagong1" controls src="music/yuanxiagong1.mp3"></audio>
+          
+            <p>2：</p>
+            <audio id="yuanxiagong2" controls src="music/yuanxiagong2.mp3"></audio>
+            <p>冰本：</p>
+            <audio id="ice" controls src="music/ice.mp3"></audio>
+            <p>火本：</p>
+            <audio id="ice" controls src="music/fire.mp3"></audio>
+            <p>雷本：</p>
+            <audio id="ice" controls src="music/thunder.mp3"></audio>
+            <p>水本：</p>
+            <audio id="ice" controls src="music/water.mp3"></audio>
+          </div>  
+    </div>
+</body>
+</html>

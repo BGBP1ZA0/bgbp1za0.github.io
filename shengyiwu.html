@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圣遗物双暴计算</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <ul class="ys-head">
+            <li><a href="index.html">首页</a></li>  
+            <li><a href="bayinhe.html">八音盒</a></li>  
+            <li><a href="shop.html">商城</a></li>  
+            <li><a href="https://ys.mihoyo.com/cloud/#/">云原神</a></li>  
+            <li><a href="shengyiwu.html">圣遗物双暴计算</a></li>  
+            <li><a href="exp.html">我还要多久升冒险等级？</a></li>
+        </ul>
+    </header>
+    <nav class="banner">
+        <img src="images/bann.png" alt="">
+    </nav>
+    <div>
+        <h1>圣遗物双暴计算</h1>
+        <div class="shengyiwu-list">        
+            <label for="number1">输入暴击率：</label>
+            <input type="number" id="number1" step="0.1" placeholder="请务必输入数字">%
+            <br>
+            <label for="number2">输入暴击伤害：</label>
+            <input type="number" id="number2" step="0.1" placeholder="请务必输入数字">%
+            <br>
+            <button onclick="calculate()">计算</button>
+            <p id="result">经鉴定，该圣遗物的双暴评分为：</p>
+            <p id="score">由此推断，该圣遗物：</p>
+        </div>
+
+  <script>
+  function calculate() {
+  var number1 = parseFloat(document.getElementById("number1").value);
+  var number2 = parseFloat(document.getElementById("number2").value);
+  var result = Math.round((number1 * 2) + number2);
+  var score = getScore(result);
+  var scoreElement = document.getElementById("score");
+  scoreElement.innerHTML = "由此推断，该圣遗物：<span style='color:" + score.color + ";'>" + score.suggestion + "</span>";
+  document.getElementById("result").innerText = "经鉴定，该圣遗物的双暴评分为：" + result;
+}
+
+function getScore(result) {
+  if (result < 20) {
+    return { suggestion: "双暴分数太垃圾了", color: "red" };
+  } else if (result >= 20 && result < 30) {
+    return { suggestion: "双暴分数勉强及格", color: "green" };
+  } else if (result >= 30 && result < 40) {
+    return { suggestion: "双暴分数还可以接受", color: "green" };
+  } else if (result >= 40 && result < 50) {
+    return { suggestion: "双暴分数还算不错", color: "green" };
+  } else {
+    return { suggestion: "极品双暴分数，千万不要被毁号", color: "gold" };
+  }
+}
+
+
+  </script>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我还要多久升冒险等级？</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <ul class="ys-head">
+            <li><a href="index.html">首页</a></li>  
+            <li><a href="bayinhe.html">八音盒</a></li>  
+            <li><a href="shop.html">商城</a></li>  
+            <li><a href="https://ys.mihoyo.com/cloud/#/">云原神</a></li>  
+            <li><a href="shengyiwu.html">圣遗物双暴计算</a></li>  
+            <li><a href="exp.html">我还要多久升冒险等级？</a></li>
+        </ul>
+    </header>
+    <nav class="banner">
+        <img src="images/bann.png" alt="">
+    </nav>
+    <div>
+        <h1>我还要多久升冒险等级？</h1>
+        <div class="shengyiwu-list">
+            <label for="targetLevel">输入目标等级：</label>
+            <input type="number" id="targetLevel" min="1" step="1">
+            <br>
+            <button onclick="calculateAndDisplay()">一键计算</button>
+            <br>
+            <p id="requiredExperience"></p>
+            <p id="totalExperience"></p>
+
+            <script>
+              // 定义等级和对应经验的映射关系
+              var experienceMap = {
+                1: 0,
+                2: 375,
+                3: 500,
+                4:625,
+                5:725,
+                6:850,
+                7:950,
+                8:1075,
+                9:1200,
+                10:1300,
+                11:1425,
+                12:1525,
+                13:1650,
+                14:1775,
+                15:1875,
+                16:2000,
+                17:2375,
+                18:2500,
+                19:2625,
+                20:2775,
+                21:2825,
+                22:3425,
+                23:3725,
+                24:4000,
+                25:4300,
+                26:4575,
+                27:4875,
+                28:5150,
+                29:5450,
+                30:5725,
+                31:6025,
+                32:6300,
+                33:6600,
+                34:6900,
+                35:7175,
+                36:7475,
+                37:7750,
+                38:8050,
+                39:8325,
+                40:8625,
+                41:10550,
+                42:11525,
+                43:12450,
+                44:13450,
+                45:14400,
+                46:15350,
+                47:16325,
+                48:17275,
+                49:18250,
+                50:19200,
+                51:26400,
+                52:28800,
+                53:31200,
+                54:33600,
+                55:36000,
+                56:232350,
+                57:258950,
+                58:285750,
+                59:312825,
+                60:340125
+              };
+          
+              function calculateAndDisplay() {
+                var targetLevel = parseInt(document.getElementById("targetLevel").value);
+                var requiredExperienceElement = document.getElementById("requiredExperience");
+                var totalExperienceElement = document.getElementById("totalExperience");
+          
+                // 检查输入的目标等级是否有效
+                if (targetLevel > 0) {
+                  // 计算并显示从（当前目标等级-1）级升级到当前目标等级所需经验
+                  var requiredExperience = calculateRequiredExperience(targetLevel - 1, targetLevel);
+                  requiredExperienceElement.innerText = "从 " + (targetLevel - 1) + " 级升级到 " + targetLevel + " 级所需经验：" + requiredExperience;
+          
+                  // 计算并显示从1级升级到当前目标等级所需经验
+                  var totalExperience = calculateRequiredExperience(1, targetLevel);
+                  totalExperienceElement.innerText = "从1级升级到 " + targetLevel + " 级所需经验：" + totalExperience;
+                } else {
+                  requiredExperienceElement.innerText = "请输入有效的目标等级";
+                  totalExperienceElement.innerText = "";
+                }
+              }
+              function calculateRequiredExperience(startLevel, endLevel) {
+                // 计算所需经验，使用映射关系中的经验值
+                var requiredExperience = 0;
+                for (var level = startLevel + 1; level <= endLevel; level++) {
+                  if (experienceMap[level]) {
+                    requiredExperience += experienceMap[level];
+                  } else {
+                    // 如果没有定义该等级的经验值，可以自行定义默认值或者进行其他处理
+                    console.error("未定义等级 " + level + " 的经验值");
+                  }
+                }
+                return requiredExperience;
+              }
+            </script>
+        </div>
+    </div>
+</body>
+</html>
