@@ -118,6 +118,8 @@ h1{
     .shengyiwu-list{
         width: 100%;
         justify-content: center;
+	padding-left: 5px;
+        padding-right: 5px;
     }
 }
 @media screen and (max-height:600px){
@@ -143,5 +145,7 @@ h1{
         .shengyiwu-list{
             width: 100%;
             justify-content: center;
+	    padding-left: 5px;
+            padding-right: 5px;
         }
 }
