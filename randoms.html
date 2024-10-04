@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>原站</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <ul class="ys-head">
+            <li><a href="index.html">首页</a></li>  
+            <li><a href="bayinhe.html">八音盒</a></li>  
+            <li><a href="shop.html">商城</a></li>  
+            <li><a href="https://ys.mihoyo.com/cloud/#/">云原神</a></li>  
+            <li><a href="tools.html">工具合集</a></li>  
+        </ul>
+    </header>
+    <nav class="banner">
+        <img src="images/bann.png" alt="">
+    </nav>
+    <div>
+        <h1>随机字符生成</h1>
+        <div class="shengyiwu-list">
+            <p style="color: red;">声明：该功能的实现是全部脱机的，将本网页下载后仍然可用，不会将生成数据上云，请放心使用。</p>
+            <p style="color: orange;">警告：字符串的长度不宜过长（经过测试在长度为1000000之后生成速度变慢），否则可能会造成卡顿，若出现此问题，请关闭浏览器并重新进入界面。</p><br>
+            <h3>随机大小写字符串</h3><br>
+            <label for="lengthInput">请输入字符串长度：</label>
+            <input type="number" id="lengthInput" min="1" placeholder="输入位数，最小为1，最大无限" style="width: 200px;">
+            <button onclick="generateRandomString()">生成字符串</button>
+            <div id="result0"></div><br><br>
+            <h3>随机数字</h3><br>
+            <label for="lengthInput">请输入数字长度：</label>
+            <input type="number" id="lengthInput" min="1" placeholder="输入位数，最小为1，最大无限" style="width: 200px;">
+            <button onclick="generateRandomNumber()">生成数字</button>
+            <div id="result1"></div><br><br>
+        </div>
+    </div>
+    <script>
+        function generateRandomString() {
+            const length = parseInt(document.getElementById('lengthInput').value);
+            
+            // 验证用户输入的长度是否有效
+            if (isNaN(length) || length <= 0) {
+                document.getElementById('result').textContent = '请输入有效的长度！';
+                return;
+            }
+
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+
+            // 显示生成的随机字符串
+            document.getElementById('result0').textContent = '生成的随机字符串是：' + result;
+        }
+        function generateRandomNumber() {
+            const length = parseInt(document.getElementById('lengthInput').value);
+            
+            // 验证用户输入的长度是否有效
+            if (isNaN(length) || length <= 0) {
+                document.getElementById('result').textContent = '请输入有效的长度！';
+                return;
+            }
+
+            const characters = '0123456789';
+            let result = '';
+            
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+
+            // 显示生成的随机字符串
+            document.getElementById('result1').textContent = '生成的随机数字是：' + result;
+        }
+    </script>
+
+</body>
+</html>
