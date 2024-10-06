@@ -42,7 +42,7 @@
             const length0 = parseInt(document.getElementById('lengthInput0').value);
             
             // 验证用户输入的长度是否有效
-            if (isNaN(length) || length <= 0) {
+            if (isNaN(length0) || length0 <= 0) {
                 document.getElementById('result0').textContent = '请输入有效的长度！';
                 return;
             }
@@ -50,7 +50,7 @@
             const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
             let result = '';
             
-            for (let i = 0; i < length; i++) {
+            for (let i = 0; i < length0; i++) {
                 result += characters.charAt(Math.floor(Math.random() * characters.length0));
             }
 
@@ -61,7 +61,7 @@
             const length1 = parseInt(document.getElementById('lengthInput1').value);
             
             // 验证用户输入的长度是否有效
-            if (isNaN(length) || length <= 0) {
+            if (isNaN(length1) || length1 <= 0) {
                 document.getElementById('result1').textContent = '请输入有效的长度！';
                 return;
             }
@@ -69,7 +69,7 @@
             const characters = '0123456789';
             let result = '';
             
-            for (let i = 0; i < length; i++) {
+            for (let i = 0; i < length1; i++) {
                 result += characters.charAt(Math.floor(Math.random() * characters.length1));
             }
 
