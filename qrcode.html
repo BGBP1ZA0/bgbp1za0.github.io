@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二维码生成</title>
+    <script src="./scripts/qrcode.js"></script>
+  <script src="./scripts/html2canvas.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <ul class="ys-head">
+            <li><a href="index.html">首页</a></li>  
+            <li><a href="bayinhe.html">八音盒</a></li>  
+            <li><a href="shop.html">商城</a></li>  
+            <li><a href="https://ys.mihoyo.com/cloud/#/">云原神</a></li>  
+            <li><a href="tools.html">工具合集</a></li>  
+        </ul>
+    </header>
+    <nav class="banner">
+        <img src="images/bann.png" alt="">
+    </nav>
+    <div>
+        <h1>二维码生成</h1>
+  <div class="shengyiwu-list">
+    <div class="controls">
+      <div>
+        <label for="qrColor">二维码颜色：</label>
+        <input type="color" id="qrColor" value="#000000">
+      </div>
+      <div>
+        <label for="bgColor">背景颜色：</label>
+        <input type="color" id="bgColor" value="#ffffff">
+      </div>
+      <div>
+        <label for="transparentBackground">透明背景：</label>
+        <input type="checkbox" id="transparentBackground">
+      </div>
+      <div><label for="qrSize">二维码尺寸：</label>
+        <select id="qrSize">
+          <option value="128">128x128</option>
+          <option value="256" selected>256x256</option>
+          <option value="512">512x512</option>
+        </select>
+      </div>
+    </div>
+    <input type="text" id="inputText" placeholder="输入内容（支持中文）" /><br>
+    <button onclick="generateQRCode()">生成二维码</button><br><br>
+    <button onclick="saveQRCode()">保存为图片</button>
+    <div id="qrcode"></div><br><br>
+  </div>
+    </div>
+    <script>
+      let qrcodeInstance = null;
+
+    // 生成二维码的函数
+    function generateQRCode() {
+      const inputText = document.getElementById('inputText').value;
+      const qrcodeDiv = document.getElementById('qrcode');
+      qrcodeDiv.innerHTML = ''; // 清空之前的二维码
+
+      if (inputText) {
+        // 获取用户选择的颜色和尺寸
+        const qrColor = document.getElementById('qrColor').value;
+        const bgColor = document.getElementById('bgColor').value;
+        const transparentBackground = document.getElementById('transparentBackground').checked;
+        const qrSize = parseInt(document.getElementById('qrSize').value);
+
+        // 使用 QRCode.js 生成二维码
+        qrcodeInstance = new QRCode(qrcodeDiv, {
+          text: inputText,
+          width: qrSize,
+          height: qrSize,
+          correctLevel: QRCode.CorrectLevel.L,
+          colorDark: qrColor,  // 二维码颜色
+          colorLight: transparentBackground ? 'transparent' : bgColor, // 背景颜色
+        });
+
+        // 设置背景颜色
+        qrcodeDiv.style.backgroundColor = transparentBackground ? 'transparent' : bgColor;
+      } else {
+        alert('请输入内容');
+      }
+    }
+
+    // 保存二维码为图片
+    function saveQRCode() {
+      if (!qrcodeInstance) {
+        alert('请先生成二维码');
+        return;
+      }
+
+      // 使用 html2canvas 将二维码区域转换为图片
+      html2canvas(document.getElementById('qrcode'), {
+        backgroundColor: null, // 设置为 null 以支持透明背景
+      }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'qrcode.png'; // 下载文件名
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }
+
+    // 为输入框添加回车键监听
+    document.getElementById('inputText').addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        generateQRCode();
+      }
+    });
+    </script>
+
+</body>
+</html>
