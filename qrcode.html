@@ -25,6 +25,8 @@
     <div>
         <h1>二维码生成</h1>
   <div class="shengyiwu-list">
+       <p style="color: red;">声明：该功能的实现是全部脱机的，将本网页及附带脚本下载后仍然可用，不会将生成数据上云，请放心使用。</p>
+            <p style="color: orange;">友情提示：在PC端可选择的颜色更加全面，效果更佳。</p><br>
     <div class="controls">
       <div>
         <label for="qrColor">二维码颜色：</label>
@@ -87,21 +89,27 @@
 
     // 保存二维码为图片
     function saveQRCode() {
-      if (!qrcodeInstance) {
+    if (!qrcodeInstance) {
         alert('请先生成二维码');
         return;
-      }
+    }
 
-      // 使用 html2canvas 将二维码区域转换为图片
-      html2canvas(document.getElementById('qrcode'), {
+    // 获取用户选择的二维码尺寸
+    const qrSize = parseInt(document.getElementById('qrSize').value);
+
+    // 使用 html2canvas 将二维码区域转换为图片
+    html2canvas(document.getElementById('qrcode'), {
         backgroundColor: null, // 设置为 null 以支持透明背景
-      }).then(canvas => {
+        width: qrSize, // 设置画布宽度为二维码尺寸
+        height: qrSize, // 设置画布高度为二维码尺寸
+        scale: 1, // 设置缩放比例为 1（避免缩放导致的模糊）
+    }).then(canvas => {
         const link = document.createElement('a');
         link.download = 'qrcode.png'; // 下载文件名
         link.href = canvas.toDataURL('image/png');
         link.click();
-      });
-    }
+    });
+}
 
     // 为输入框添加回车键监听
     document.getElementById('inputText').addEventListener('keydown', (event) => {
