@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>二维码生成</title>
+    <title>二维码生成与识别</title>
     <script src="./scripts/qrcode.js"></script>
   <script src="./scripts/html2canvas.js"></script>
+      <script src="./scripts/jsQR.js"></script>
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,10 +25,12 @@
         <img src="images/bann.png" alt="">
     </nav>
     <div>
-        <h1>二维码生成</h1>
+        <h1>二维码生成与识别</h1>
   <div class="shengyiwu-list">
        <p style="color: red;">声明：该功能的实现是全部脱机的，将本网页及附带脚本下载后仍然可用，不会将生成数据上云，请放心使用。</p>
             <p style="color: orange;">友情提示：在PC端可选择的颜色更加全面，效果更佳。</p><br>
+          <h3>二维码生成</h3>
+
     <div class="controls">
       <div>
         <label for="qrColor">二维码颜色：</label>
@@ -52,6 +56,12 @@
     <button onclick="generateQRCode()">生成二维码</button><br><br>
     <button onclick="saveQRCode()">保存为图片</button>
     <div id="qrcode"></div><br><br>
+      <h3>二维码识别</h3>
+    <div>
+      <input type="file" id="qrInput" accept="image/*" />
+    <div id="result"></div>
+    <canvas id="qrCanvas"></canvas>
+    </div>
   </div>
     </div>
     <script>
@@ -117,6 +127,36 @@
         generateQRCode();
       }
     });
+        const qrInput = document.getElementById('qrInput');
+        const qrCanvas = document.getElementById('qrCanvas');
+        const resultDiv = document.getElementById('result');
+
+        qrInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const ctx = qrCanvas.getContext('2d');
+                        qrCanvas.width = img.width;
+                        qrCanvas.height = img.height;
+                        ctx.drawImage(img, 0, 0, img.width, img.height);
+
+                        const imageData = ctx.getImageData(0, 0, img.width, img.height);
+                        const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+                        if (code) {
+                            resultDiv.textContent = `解析结果：${code.data}`;
+                        } else {
+                            resultDiv.textContent = '未检测到二维码';
+                        }
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
     </script>
 
 </body>
