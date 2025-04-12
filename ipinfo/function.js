@@ -73,9 +73,9 @@ async function generateImage() {
     // 绘制文本
     ctx.fillText(`欢迎您来自 ${country}-${province}-${city} 的朋友`, 10, 25);
     ctx.fillText(dateStr, 10, 52);
-    ctx.fillText(`您的IP是: ${ip}`, 10, 80);
-    ctx.fillText(`您使用的是 ${os} 操作系统`, 10, 105);
-    ctx.fillText(`您使用的是 ${browser}`, 10, 135);
+    ctx.fillText(`您的IP是: ${ip}`, 10, 75);
+    ctx.fillText(`您使用的是 ${os} 操作系统`, 10, 100);
+    ctx.fillText(`您使用的是 ${browser}`, 10, 125);
 
     // 解析 GET 参数
     const urlParams = new URLSearchParams(window.location.search);
