@@ -3,6 +3,7 @@
     margin: 0;
     box-sizing: border-box;
 }
+canvas { border: 1px solid #ccc; margin-top: 20px; }
 a{
     text-decoration: none;
 }
