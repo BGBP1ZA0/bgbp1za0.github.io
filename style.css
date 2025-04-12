@@ -3,7 +3,7 @@
     margin: 0;
     box-sizing: border-box;
 }
-canvas { border: 1px solid #ccc; margin-top: 20px; }
+canvas { border: 1px solid #ccc; margin-top: 20px; width:600px;height:160px;}
 a{
     text-decoration: none;
 }
