@@ -137,7 +137,7 @@ input[type="text"] {
             font-size: 18px;
             color: #333;
         }
-        canvas {
+        canvas.qrcode {
             display: none;
         }
 @media screen and (max-width:600px){
