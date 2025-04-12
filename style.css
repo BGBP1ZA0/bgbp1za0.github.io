@@ -142,8 +142,9 @@ input[type="text"] {
         }
 @media screen and (max-width:600px){
     body{
-	width: 100%
+	width: 100%;
     }
+	canvas{width:100%;}
     .ys-head{
         width: 100%
     }
@@ -169,10 +170,11 @@ input[type="text"] {
 }
 @media screen and (max-height:600px){
     body{
-        width: 100%
+        width: 100%;
         }
+	canvas{width:100%;}
         .ys-head{
-            width: 100%
+            width: 100%;
         }
         .banner{
             width: 100%;
