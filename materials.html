@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日材料轮换查询</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .material-container {
+            margin: 20px auto;
+            max-width: 800px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .material-day {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+        }
+        .material-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .material-item {
+            text-align: center;
+            width: 80px;
+        }
+        .material-img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+        }
+        .material-item p {
+            margin: 5px 0 0;
+            font-size: 12px;
+            color: #555;
+        }
+        .warning-text {
+            color: orange;
+            margin: 10px 0;
+        }
+        select {
+            padding: 5px;
+                   }
+    </style>
+    </head>
+<body>
+    <header>
+        <ul class="ys-head">
+            <li><a href="index.html">首页</a></li>  
+            <li><a href="bayinhe.html">八音盒</a></li>  
+            <li><a href="shop.html">商城</a></li>  
+            <li><a href="https://ys.mihoyo.com/cloud/#/">云原神</a></li>  
+            <li><a href="tools.html">工具合集</a></li>  
+        </ul>
+    </header>
+    <nav class="banner">
+        <img src="bann.png" alt="">
+    </nav>
+
+    <div class="shengyiwu-list">
+        <h1>每日材料轮换查询</h1>
+        <p class="warning-text">声明：该功能完全脱机运行，不会上传任何数据，请放心使用。</p>
+
+        <div style="margin-bottom: 10px;">
+            <label for="nation-select">选择国家：</label>
+            <select id="nation-select">
+                <option value="">请选择</option>
+                <option value="蒙德">蒙德</option>
+                <option value="璃月">璃月</option>
+                <option value="稻妻">稻妻</option>
+                <option value="须弥">须弥</option>
+                <option value="枫丹">枫丹</option>
+                <option value="纳塔">纳塔</option>
+            </select>
+        </div>
+
+        <div id="today-material"></div>
+    </div>
+<script src="scripts\materials.js"></script>
+
+</body>
+</html>
