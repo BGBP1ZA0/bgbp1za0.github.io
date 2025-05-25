@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>备忘录</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 备忘录工具的样式 
+        #memo-container {
+            width: 80%;
+            max-width: 600px;
+            margin: 100px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }*/
+
+        #memo-text {
+            width: 500px;
+            height: 300px;
+            margin-bottom: 10px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            resize: vertical;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        #filename-input {
+            width: 150px;
+            padding: 8px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        #download-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <ul class="ys-head">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="bayinhe.html">八音盒</a></li>
+            <li><a href="shop.html">商城</a></li>
+            <li><a href="https://ys.mihoyo.com/cloud/#/">云原神</a></li>
+            <li><a href="tools.html">工具合集</a></li>
+        </ul>
+    </header>
+
+    <nav class="banner">
+        <img src="bann.png" alt="">
+    </nav>
+    <h1>临时备忘录</h1>
+
+    <div class="shengyiwu-list">
+        <p style="color: red;">在此处复制或输入待保存为txt文本文档的文字。</p><br>
+        <textarea id="memo-text" placeholder="在这里复制内容"></textarea><br>
+        <input type="text" id="filename-input" value="text" placeholder="输入文件名 (可选)">
+        <button id="download-btn">下载为txt</button>
+    </div>
+
+    <script>
+        const memoText = document.getElementById('memo-text');
+        const downloadBtn = document.getElementById('download-btn');
+        const filenameInput = document.getElementById('filename-input');
+
+        downloadBtn.addEventListener('click', () => {
+            const text = memoText.value;
+            const filename = filenameInput.value.trim() || "text.txt";
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+
+            if (text) {
+                if (navigator.msSaveBlob) {
+                    navigator.msSaveBlob(blob, filename);
+                } else {
+                    const link = document.createElement('a');
+                    const url = URL.createObjectURL(blob);
+                    link.href = url;
+                    link.download = filename + (filename.endsWith('.txt') ? '' : '.txt');
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                }
+            } else {
+                alert("备忘录内容为空，无法下载！");
+            }
+        });
+
+        
+
+        
+    </script>
+
+</body>
+
+</html>
