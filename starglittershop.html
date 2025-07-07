@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name='description' content='原站-每月星辉商店'>
+    <title>每月星辉商店查询</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.ico">
+    <style>
+        .material-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .material-item {
+            width: 80px;
+            text-align: center;
+        }
+
+        .material-item img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+        }
+
+        .material-item p {
+            margin: 5px 0 0;
+            font-size: 12px;
+            color: #555;
+        }
+        .warning-text {
+            color: orange;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <ul class="ys-head">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="bayinhe.html">八音盒</a></li>
+            <li><a href="shop.html">商城</a></li>
+            <li><a href="https://ys.mihoyo.com/cloud/#/">云原神</a></li>
+            <li><a href="tools.html">工具合集</a></li>
+        </ul>
+    </header>
+    <nav class="banner">
+        <img src="bann.png" alt="">
+    </nav>
+
+    <div class="shengyiwu-list">
+        <h1>每月星辉商店查询</h1>
+        <p class="warning-text">声明：该功能除加载外部图片外完全脱机运行，不会上传任何数据，请放心使用。</p>
+
+        <div id="this-month-starglitter"></div>
+
+    </div>
+    <script src="scripts/starglitter.js"></script>
+</body>
+
+</html>
