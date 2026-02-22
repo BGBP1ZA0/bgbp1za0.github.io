@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name='description' content='原站-URL 编码工具'>
+    <title>URL 编码工具</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.ico">
+    <style>
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        label { font-weight: bold; display: block; margin-bottom: 8px; color: #666; }
+        textarea { width:300px; height: 150px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; resize: vertical; font-family: monospace; }
+        .btn-group { margin: 15px 0; display: flex; gap: 10px; }
+        button { padding: 10px 20px; cursor: pointer; border: none; border-radius: 4px; transition: 0.3s; font-size: 14px; }
+        .btn-encode { background-color: #007bff; color: white; }
+        .btn-encode:hover { background-color: #0056b3; }
+        .btn-copy { background-color: #28a745; color: white; }
+        .btn-copy:hover { background-color: #218838; }
+        .tips { font-size: 12px; color: #999; margin-top: 5px; }
+    </style>
+</head>
+
+<body>
+    <header>
+        <ul class="ys-head">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="bayinhe.html">八音盒</a></li>
+            <li><a href="shop.html">商城</a></li>
+            <li><a href="https://ys.mihoyo.com/cloud/#/">云原神</a></li>
+            <li><a href="tools.html">工具合集</a></li>
+        </ul>
+    </header>
+    <nav class="banner">
+        <img src="images/bann.png" alt="">
+    </nav>
+
+    <div class="shengyiwu-list">
+        <h1>URL 编码工具</h1>
+        <label for="input">输入中文字符：</label>
+        <textarea id="input" placeholder="请在这里输入或粘贴内容..."></textarea>
+
+        <div class="btn-group">
+            <button class="btn-encode" onclick="handleEncode()">立即转换</button>
+        </div>
+
+        <label for="output">UrlEncode 编码结果：</label>
+        <textarea id="output" readonly placeholder="转换后的结果将显示在这里..."></textarea>
+
+        <div class="btn-group">
+            <button class="btn-copy" onclick="handleCopy()">复制结果</button>
+        </div>
+        <p id="msg" class="tips"></p>
+    </div>
+    <script>
+        // 转换逻辑
+        function handleEncode() {
+            const inputVal = document.getElementById('input').value;
+            // 使用 encodeURIComponent 进行编码
+            const encodedVal = encodeURIComponent(inputVal);
+            document.getElementById('output').value = encodedVal;
+            showMsg("转换成功！");
+        }
+
+        // 复制逻辑
+        function handleCopy() {
+            const outputText = document.getElementById('output');
+            if (!outputText.value) {
+                showMsg("没有内容可复制", "#dc3545");
+                return;
+            }
+            
+            outputText.select();
+            document.execCommand('copy'); // 兼容性较好的复制方法
+            
+            showMsg("已成功复制到剪贴板！", "#28a745");
+        }
+
+        // 提示信息处理
+        function showMsg(text, color = "#666") {
+            const msg = document.getElementById('msg');
+            msg.innerText = text;
+            msg.style.color = color;
+            setTimeout(() => msg.innerText = "", 2000);
+        }
+    </script>
+</body>
+
+</html>
