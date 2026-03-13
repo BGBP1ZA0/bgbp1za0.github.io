@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Transgender Pride Flag - High Definition</title>
+    <style>
+        /* 消除页面边距，确保旗帜铺满 */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000; /* 背景黑色，方便观察边缘 */
+        }
+
+        /* 保持旗帜的标准比例 (5:3) */
+        .flag-wrapper {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 每一横条各占 20% 高度 */
+        .stripe {
+            flex: 1;
+            width: 100%;
+        }
+
+        /* 标准跨性别旗色值 */
+        .blue  { background-color: #5BCEFA; }
+        .pink  { background-color: #F5A9B8; }
+        .white { background-color: #FFFFFF; }
+    </style>
+</head>
+<body>
+
+    <div class="flag-wrapper">
+        <div class="stripe blue"></div>
+        <div class="stripe pink"></div>
+        <div class="stripe white"></div>
+        <div class="stripe pink"></div>
+        <div class="stripe blue"></div>
+    </div>
+
+</body>
+</html>
