@@ -44,9 +44,9 @@
         <h1>AES 离线加密工具</h1>
         <br>
         <p style="font-size: 12px; color: #888; margin-top: -10px; border-bottom: 1px dashed #ddd; padding-bottom: 10px;">
-    🔒 安全协议：采用军用级 <strong>AES-256-CBC</strong> 算法，所有加解密过程均在本地浏览器完成，不上传任何明文数据。（ps：即使想偷也偷不了，网站是本身就是静态的）</p>
+    🔒 安全协议：采用军用级 <strong>AES-256-CBC</strong> 算法，所有加解密过程均在本地浏览器完成，不上传任何明文数据。（ps：即使想偷也偷不了，因为网站本身就是静态的。）</p>
         <label for="input">输入原文或密文：</label>
-        <textarea id="input" placeholder="在这里输入要加密的日记，或者要解密的乱码..."></textarea>
+        <textarea id="input" placeholder="在这里输入要加密的内容，或者要解密的乱码..."></textarea>
 
         <label for="pwd">设置密码 (Password)：</label>
         <input type="password" id="pwd" placeholder="输入你的密码，务必牢记！">
@@ -70,7 +70,7 @@
             const password = document.getElementById('pwd').value;
             
             if (!content || !password) {
-                showMsg("内容和钥匙都不能少哦！", "#dc3545");
+                showMsg("内容和密码都不能少哦！", "#dc3545");
                 return;
             }
 
@@ -89,7 +89,7 @@
             const password = document.getElementById('pwd').value;
             
             if (!cipherText || !password) {
-                showMsg("请输入密文和钥匙！", "#dc3545");
+                showMsg("请输入密文和密码！", "#dc3545");
                 return;
             }
 
@@ -102,7 +102,7 @@
                 document.getElementById('output').value = originalText;
                 showMsg("解密成功！", "#28a745");
             } catch (e) {
-                showMsg("解密失败！钥匙错了或是密文损坏。", "#dc3545");
+                showMsg("解密失败！密码错了或是密文损坏。", "#dc3545");
                 document.getElementById('output').value = "";
             }
         }
