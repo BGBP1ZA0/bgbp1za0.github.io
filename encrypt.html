@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name='description' content='原站-AES 离线加密工具'>
+    <title>AES 离线加密工具</title>
+    <script src="scripts/crypto-js.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.ico">
+    <style>
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        label { font-weight: bold; display: block; margin: 15px 0 8px 0; color: #666; }
+        textarea { width: 100%; max-width: 600px; height: 120px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; resize: vertical; font-family: monospace; }
+        input[type="password"] { width: 100%; max-width: 600px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        .btn-group { margin: 15px 0; display: flex; gap: 10px; flex-wrap: wrap; }
+        button { padding: 10px 20px; cursor: pointer; border: none; border-radius: 4px; transition: 0.3s; font-size: 14px; min-width: 100px; }
+        .btn-encode { background-color: #007bff; color: white; }
+        .btn-encode:hover { background-color: #0056b3; }
+        .btn-decode { background-color: #6c757d; color: white; }
+        .btn-decode:hover { background-color: #5a6268; }
+        .btn-copy { background-color: #28a745; color: white; }
+        .btn-copy:hover { background-color: #218838; }
+        .tips { font-size: 12px; color: #999; margin-top: 5px; min-height: 1.5em; }
+        /* 适配你截图中的布局 */
+        .shengyiwu-list { padding: 20px; max-width: 800px; margin: 0 auto; text-align: left; }
+    </style>
+</head>
+<body>
+    <header>
+        <ul class="ys-head">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="bayinhe.html">八音盒</a></li>
+            <li><a href="shop.html">商城</a></li>
+            <li><a href="https://ys.mihoyo.com/cloud/#/">云原神</a></li>
+            <li><a href="tools.html">工具合集</a></li>
+        </ul>
+    </header>
+    <nav class="banner">
+        <img src="images/bann.png" alt="banner">
+    </nav>
+
+    <div class="shengyiwu-list">
+        <h1>AES 离线加密工具</h1>
+        <p style="font-size: 12px; color: #888; margin-top: -10px; border-bottom: 1px dashed #ddd; padding-bottom: 10px;">
+    🔒 安全协议：采用军用级 <strong>AES-256-CBC</strong> 算法，所有加解密过程均在本地浏览器完成，不上传任何明文数据。（ps：即使想偷也偷不了，网站是本身就是静态的）</p>
+        <label for="input">输入原文或密文：</label>
+        <textarea id="input" placeholder="在这里输入要加密的日记，或者要解密的乱码..."></textarea>
+
+        <label for="pwd">设置密码 (Password)：</label>
+        <input type="password" id="pwd" placeholder="输入你的密码，务必牢记！">
+
+        <div class="btn-group">
+            <button class="btn-encode" onclick="handleEncrypt()">🔒 立即加密</button>
+            <button class="btn-decode" onclick="handleDecrypt()">🔓 立即解密</button>
+            <button class="btn-copy" onclick="handleCopy()">复制结果</button>
+        </div>
+
+        <label for="output">处理结果：</label>
+        <textarea id="output" readonly placeholder="处理后的结果将显示在这里..."></textarea>
+        
+        <p id="msg" class="tips"></p>
+    </div>
+
+    <script>
+        // 加密逻辑
+        function handleEncrypt() {
+            const content = document.getElementById('input').value;
+            const password = document.getElementById('pwd').value;
+            
+            if (!content || !password) {
+                showMsg("内容和钥匙都不能少哦！", "#dc3545");
+                return;
+            }
+
+            try {
+                const encrypted = CryptoJS.AES.encrypt(content, password).toString();
+                document.getElementById('output').value = encrypted;
+                showMsg("加密成功！请妥善保存结果。", "#28a745");
+            } catch (e) {
+                showMsg("加密出错了，请检查输入。", "#dc3545");
+            }
+        }
+
+        // 解密逻辑
+        function handleDecrypt() {
+            const cipherText = document.getElementById('input').value;
+            const password = document.getElementById('pwd').value;
+            
+            if (!cipherText || !password) {
+                showMsg("请输入密文和钥匙！", "#dc3545");
+                return;
+            }
+
+            try {
+                const bytes = CryptoJS.AES.decrypt(cipherText, password);
+                const originalText = bytes.toString(CryptoJS.enc.Utf8);
+                
+                if (!originalText) throw new Error("Key Wrong");
+                
+                document.getElementById('output').value = originalText;
+                showMsg("解密成功！。", "#28a745");
+            } catch (e) {
+                showMsg("解密失败！钥匙错了或是密文损坏。", "#dc3545");
+                document.getElementById('output').value = "";
+            }
+        }
+
+        // 复制逻辑
+        function handleCopy() {
+            const outputText = document.getElementById('output');
+            if (!outputText.value) {
+                showMsg("没有内容可复制", "#dc3545");
+                return;
+            }
+            
+            outputText.select();
+            try {
+                document.execCommand('copy');
+                showMsg("已成功复制到剪贴板！", "#28a745");
+            } catch (err) {
+                showMsg("复制失败，请手动选择复制。", "#dc3545");
+            }
+        }
+
+        // 提示信息处理
+        function showMsg(text, color = "#666") {
+            const msg = document.getElementById('msg');
+            msg.innerText = text;
+            msg.style.color = color;
+            setTimeout(() => { if(msg.innerText === text) msg.innerText = ""; }, 3000);
+        }
+    </script>
+</body>
+</html>
