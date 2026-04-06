@@ -100,7 +100,7 @@
                 if (!originalText) throw new Error("Key Wrong");
                 
                 document.getElementById('output').value = originalText;
-                showMsg("解密成功！。", "#28a745");
+                showMsg("解密成功！", "#28a745");
             } catch (e) {
                 showMsg("解密失败！钥匙错了或是密文损坏。", "#dc3545");
                 document.getElementById('output').value = "";
