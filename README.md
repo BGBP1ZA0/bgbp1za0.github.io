@@ -14,7 +14,7 @@
 | :--- | :--- | :--- |
 | **主站 (推荐)** | [bgbp1za0.github.io](https://bgbp1za0.github.io) | 现代浏览器 / 移动端 |
 | **兼容版 (老机器)** | [bgbp1za0oldbr.github.io](https://bgbp1za0oldbr.github.io) | Windows XP + Chrome 46+ |
-| **IE5.0兼容版** | https://bgbp1za0.github.io/tools_for_ie_5.iso [本站直链，下载速度慢，适合墙外环境或网络环境极好情况下进行下载] | Windows 98 + IE5+ |
+| **IE5.0兼容版** | https://bgbp1za0.github.io/tools_for_ie_5.iso<br>[本站直链，下载速度慢，适合墙外环境或网络环境极好情况下进行下载] | Windows 98 + IE5+ |
 ---
 
 ### 💡 小贴士
