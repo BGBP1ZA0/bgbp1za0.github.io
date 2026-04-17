@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name='description' content='跨性别背景头像合成器'>
+    <title>🏳️‍⚧️ 头像背景合成</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.ico" >
+    
+    <style>
+        .avatar-tool { background: white; padding: 2rem; border-radius: 16px; text-align: center; margin: 20px auto; max-width: 500px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .avatar-tool canvas { max-width: 100%; height: auto; margin-top: 20px; border: 2px solid #eee; border-radius: 12px; display: none; }
+        .upload-area { display: block; margin: 25px 0; border: 2px dashed #55CDFC; padding: 20px; border-radius: 10px; cursor: pointer; transition: 0.3s; }
+        .upload-area:hover { background-color: #faffff; border-color: #F7A8B8; }
+        #upload { display: none; }
+        .btn-save { background-color: #55CDFC; color: white; border: none; padding: 12px 24px; border-radius: 30px; cursor: pointer; text-decoration: none; display: none; font-weight: bold; margin-top: 15px; transition: 0.3s; }
+        .btn-save:hover { background-color: #F7A8B8; box-shadow: 0 4px 10px rgba(247, 168, 184, 0.4); }
+        .tool-desc { color: #888; font-size: 0.9rem; line-height: 1.5; }
+    </style>
+</head>
+<body>
+    <header>
+        <ul class="ys-head">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="bayinhe.html">八音盒</a></li>
+            <li><a href="shop.html">商城</a></li>
+            <li><a href="https://ys.mihoyo.com/cloud/#/">云原神</a></li>
+            <li><a href="tools.html">工具合集</a></li>
+        </ul>
+    </header>
+    
+    <nav class="banner">
+        <img src="images/bann.png" alt="">
+    </nav>
+    
+    <div>
+        <h1 style="text-align: center; margin-top: 20px;">头像背景合成器</h1>
+        
+        <div class="avatar-tool">
+            <p class="tool-desc">上传透明 PNG 图片，自动合成跨性别旗背景<br>下载时将以时间戳命名</p>
+            
+            <label for="upload" class="upload-area">
+                <span id="upload-text">点击或拖拽上传透明 PNG</span>
+                <input type="file" id="upload" accept="image/png">
+            </label>
+            
+            <canvas id="canvas"></canvas>
+            <br>
+            <a id="download" class="btn-save">保存我的新头像</a>
+        </div>
+
+        <script>
+            const upload = document.getElementById('upload');
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const downloadBtn = document.getElementById('download');
+            const uploadText = document.getElementById('upload-text');
+
+            // 时间戳+随机数命名函数
+            function generateFileName() {
+                const now = new Date();
+                const y = now.getFullYear();
+                const m = String(now.getMonth() + 1).padStart(2, '0');
+                const d = String(now.getDate()).padStart(2, '0');
+                const h = String(now.getHours()).padStart(2, '0');
+                const min = String(now.getMinutes()).padStart(2, '0');
+                const s = String(now.getSeconds()).padStart(2, '0');
+                const randomNum = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+                
+                return `transgender_icon_${y}${m}${d}${h}${min}${s}${randomNum}.png`;
+            }
+
+            upload.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                // 提示已选文件
+                uploadText.innerText = "已选择: " + file.name;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        // 初始化画布
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        canvas.style.display = 'block';
+
+                        // 绘制背景五等分色块
+                        const colors = ['#55CDFC', '#F7A8B8', '#FFFFFF', '#F7A8B8', '#55CDFC'];
+                        const stripeHeight = canvas.height / 5;
+                        colors.forEach((color, i) => {
+                            ctx.fillStyle = color;
+                            ctx.fillRect(0, i * stripeHeight, canvas.width, stripeHeight + 1);
+                        });
+
+                        // 覆盖透明立绘
+                        ctx.drawImage(img, 0, 0);
+
+                        // 激活下载按钮并绑定动态命名
+                        downloadBtn.style.display = 'inline-block';
+                        downloadBtn.onclick = () => {
+                            const dataUrl = canvas.toDataURL("image/png");
+                            downloadBtn.href = dataUrl;
+                            downloadBtn.download = generateFileName();
+                        };
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        </script>
+        </div>
+</body>
+</html>
