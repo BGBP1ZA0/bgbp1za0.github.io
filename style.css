@@ -1,17 +1,19 @@
-/* 🏳️‍⚧️ 跨性别骄傲月特别版 CSS
-核心配色：
-浅蓝 (Light Blue): #5BCEFA
-粉红 (Pink): #F5A9B8
-白色 (White): #FFFFFF
-*/
+/* =========================================================
+   🏳️‍⚧️ 跨性别骄傲月特别版：全站完整样式表
+   核心配色：
+   浅蓝 (Light Blue): #5BCEFA
+   粉红 (Pink): #F5A9B8
+   白色 (White): #FFFFFF
+   ========================================================= */
 
+/* 1. 全局初始化样式 */
 * {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
 }
 
-/* 全局文字选中状态：粉色背景，白色文字 */
+/* 跨性别骄傲月特别细节：全站文字被鼠标框选时呈现粉色背景与白色文字 */
 ::selection {
     background-color: #F5A9B8;
     color: #FFFFFF;
@@ -37,43 +39,38 @@ header {
     height: 80px;
 }
 
-.shengyiwu-list {
-    width: 1000px;
-    margin: 0 auto;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-}
-
-/* 🏳️‍⚧️ 重点改造：导航栏换成跨性别旗帜的渐变色 */
+/* 2. 导航栏样式（重点：方案一 顶部流光细线） */
 .ys-head {
     width: 1000px;
     height: 80px;
     display: flex;
     flex-wrap: wrap;
     margin: 0 auto;
-    /* 从原本的深灰 #5a5a5a 换成蓝-粉-白-粉-蓝的旗帜渐变 */
-    background: linear-gradient(90deg, #5BCEFA 0%, #F5A9B8 25%, #FFFFFF 50%, #F5A9B8 75%, #5BCEFA 100%);
+    background-color: #2b2b2b; /* 背景回归沉稳高级的深灰，确保文字绝对清晰 */
     justify-content: space-evenly;
     align-items: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    
+    /* 🏳️‍⚧️ 核心：在导航栏最顶端拉出一道 4 像素宽的跨性别骄傲旗帜细线 */
+    border-top: 4px solid;
+    border-image: linear-gradient(90deg, #5BCEFA 0%, #F5A9B8 25%, #FFFFFF 50%, #F5A9B8 75%, #5BCEFA 100%) 1;
 }
 
 .ys-head a {
     display: inline-block;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: bold;
-    /* 因为背景变亮了，文字改为深色，并加上白色发光增加可读性 */
-    color: #333;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.9);
-    transition: color 0.3s ease;
+    color: #ffffff; /* 亮白色字体，对比清晰 */
+    transition: color 0.2s ease;
 }
 
+/* 悬浮或点击时，文字亮起温柔的骄傲粉色 */
 .ys-head a:hover {
-    color: #F5A9B8; /* 鼠标悬浮时字体变粉 */
+    color: #F5A9B8; 
 }
 
+/* 3. 页面主体与 Banner 样式 */
 .banner {
     width: 1000px;
     margin: 0 auto;
@@ -91,6 +88,16 @@ h1 {
     color: #333;
 }
 
+.shengyiwu-list {
+    width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* 4. 商品/列表卡片样式（增加骄傲月精致呼吸灯效果） */
 .shop-list {
     width: 1000px;
     margin: 0 auto;
@@ -100,23 +107,21 @@ h1 {
     align-items: center;
 }
 
-/* 🏳️‍⚧️ 卡片改造：增加粉蓝双色呼吸悬浮效果 */
 .shop-list li {
     width: 200px;
     height: 270px;
     box-shadow: 0 0 5px #ccc;
     margin: 20px;
-    border-radius: 8px;
-    background-color: #fff;
-    /* 顶部加一条粉色细边，增加精致感 */
-    border-top: 3px solid #F5A9B8; 
+    border-radius: 6px;
+    background-color: #ffffff;
+    border-top: 3px solid #F5A9B8; /* 卡片顶部加一条粉色细边作呼应 */
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
+/* 卡片悬浮时轻轻浮起，并散发浅蓝和粉色交织的柔和光晕 */
 .shop-list li:hover {
-    transform: translateY(-5px);
-    /* 悬浮时散发浅蓝和粉色的光晕 */
-    box-shadow: 0 8px 15px rgba(91, 206, 250, 0.3), 0 0 10px rgba(245, 169, 184, 0.4);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 15px rgba(91, 206, 250, 0.25), 0 0 8px rgba(245, 169, 184, 0.3);
 }
 
 .shop-list img {
@@ -136,7 +141,7 @@ h1 {
 .shop-item span:nth-child(1) {
     font-size: 13px;
     font-weight: bold;
-    color: #F5A9B8; /* 原本的红色改为骄傲粉 */
+    color: #F5A9B8; /* 原本的红色改为跨性别骄傲粉 */
 }
 
 .shop-item span:nth-child(2) {
@@ -152,14 +157,14 @@ h1 {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: #666;
+    color: #555;
 }
 
+/* 5. 工具箱（二维码与备忘录）样式 */
 #qrcode {
     margin-top: 20px;
 }
 
-/* 🏳️‍⚧️ 表单与输入框改造：聚焦时显示浅蓝边框 */
 input[type="text"], #memo-text, #filename-input {
     padding: 10px;
     font-size: 16px;
@@ -168,10 +173,11 @@ input[type="text"], #memo-text, #filename-input {
     transition: all 0.3s ease;
 }
 
+/* 当输入框处于聚焦状态时，亮起象征跨性别坚韧的浅蓝色光晕 */
 input[type="text"]:focus, #memo-text:focus, #filename-input:focus {
     outline: none;
     border-color: #5BCEFA;
-    box-shadow: 0 0 8px rgba(91, 206, 250, 0.4); /* 浅蓝光晕 */
+    box-shadow: 0 0 8px rgba(91, 206, 250, 0.4);
 }
 
 input[type="text"] {
@@ -198,12 +204,12 @@ input[type="text"] {
     padding: 0;
     border: none;
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: 4px;
 }
 
 .controls input[type="checkbox"] {
     margin-left: 10px;
-    accent-color: #F5A9B8; /* 复选框打钩时变成粉色 */
+    accent-color: #F5A9B8; /* 复选框打钩时自动变成骄傲粉 */
 }
 
 #result {
@@ -220,7 +226,7 @@ canvas.qrcode {
     width: 500px;
     height: 300px;
     margin-bottom: 10px;
-    padding: 12px;
+    padding: 10px;
     resize: vertical;
     font-size: 14px;
     font-family: inherit;
@@ -231,50 +237,121 @@ canvas.qrcode {
     margin-right: 10px;
 }
 
-/* 🏳️‍⚧️ 按钮改造：蓝粉渐变色 */
+/* 备忘录下载按钮改造成高级的蓝粉跨性别渐变色 */
 #download-btn {
-    /* 替换原本单调的 #007bff */
-    background: linear-gradient(135deg, #5BCEFA, #F5A9B8);
+    background: linear-gradient(135deg, #5BCEFA 0%, #F5A9B8 100%);
     color: white;
-    padding: 10px 18px;
+    padding: 10px 16px;
     border: none;
-    border-radius: 6px;
+    border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
     font-weight: bold;
-    transition: opacity 0.3s ease, transform 0.1s ease;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: opacity 0.2s ease, transform 0.1s ease;
 }
 
 #download-btn:hover {
-    opacity: 0.85;
+    opacity: 0.9;
 }
 
 #download-btn:active {
-    transform: scale(0.96);
+    transform: scale(0.97); /* 点击时带有微缩弹反馈 */
 }
 
-/* 响应式布局保持原样 */
+/* =========================================================
+   📱 6. 移动端响应式完美适配
+   ========================================================= */
+
+/* 手机及窄屏视口 */
 @media screen and (max-width: 600px) {
-    body { width: 100%; }
-    canvas { width: 100%; }
-    .ys-head { width: 100%; }
-    .banner { width: 100%; }
-    .banner img { height: 150px; }
-    .shop-item { width: 100%; }
-    .shop-list { width: 100%; justify-content: center; }
-    .shengyiwu-list { width: 100%; justify-content: center; padding-left: 5px; padding-right: 5px; }
-    #memo-text { width: 100%; }
+    body {
+        width: 100%;
+    }
+    
+    canvas {
+        width: 100%;
+    }
+    
+    /* 📱 手机端导航栏特别优化 */
+    .ys-head {
+        width: 100%;
+        height: 60px; /* 手机端高度稍微收紧，更精致 */
+    }
+    
+    .ys-head a {
+        font-size: 13px; /* 稍微缩小字号，防止 iPhone 12 Pro 等窄屏上5个标题换行错位 */
+        padding: 0 2px;  /* 稍微收窄间距 */
+    }
+    
+    .banner {
+        width: 100%;
+    }
+    
+    .banner img {
+        height: 150px;
+    }
+    
+    .shop-item {
+        width: 100%;
+    }
+    
+    .shop-list {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .shengyiwu-list {
+        width: 100%;
+        justify-content: center;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    
+    #memo-text {
+        width: 100%;
+    }
 }
 
+/* 低屏幕高度视口（横屏模式） */
 @media screen and (max-height: 600px) {
-    body { width: 100%; }
-    canvas { width: 100%; }
-    .ys-head { width: 100%; }
-    .banner { width: 100%; }
-    .banner img { height: 150px; }
-    .shop-item { width: 100%; }
-    .shop-list { width: 100%; justify-content: center; }
-    .shengyiwu-list { width: 100%; justify-content: center; padding-left: 5px; padding-right: 5px; }
-    #memo-text { width: 100%; }
+    body {
+        width: 100%;
+    }
+    
+    canvas {
+        width: 100%;
+    }
+    
+    .ys-head {
+        width: 100%;
+    }
+    
+    .banner {
+        width: 100%;
+    }
+    
+    .banner img {
+        height: 150px;
+    }
+    
+    .shop-item {
+        width: 100%;
+    }
+    
+    .shop-list {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .shengyiwu-list {
+        width: 100%;
+        justify-content: center;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    
+    #memo-text {
+        width: 100%;
+    }
 }
