@@ -40,57 +40,126 @@
         </div>
     </div>
     <script>
-        document.getElementById('lengthInput0').addEventListener('keydown', function (event) {
-    if (event.key === 'Enter') {
+      // 監聽 Enter 鍵輸入
+// 兼容 Chrome 46 及旧版浏览器的 Enter 键监听
+document.getElementById('lengthInput0').addEventListener('keydown', function (event) {
+    var e = event || window.event;
+    var keyCode = e.keyCode || e.which;
+    
+    // 兼顾现代规范 (event.key) 与旧版键码 (keyCode === 13)
+    if (e.key === 'Enter' || keyCode === 13) {
         generateRandomString();
     }
 });
 
 document.getElementById('lengthInput1').addEventListener('keydown', function (event) {
-    if (event.key === 'Enter') {
+    var e = event || window.event;
+    var keyCode = e.keyCode || e.which;
+    
+    if (e.key === 'Enter' || keyCode === 13) {
         generateRandomNumber();
     }
 });
-        function generateRandomString() {
-            const length0 = parseInt(document.getElementById('lengthInput0').value);
-            
-            // 验证用户输入的长度是否有效
-            if (isNaN(length0) || length0 <= 0) {
-                document.getElementById('result0').textContent = '请输入有效的长度！';
-                return;
-            }
-
-            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            let result = '';
-            
-            for (let i = 0; i < length0; i++) {
-                result += characters.charAt(Math.floor(Math.random() * characters.length));
-            }
-
-            // 显示生成的随机字符串
-            document.getElementById('result0').textContent = '生成的随机字符串是：' + result;
-           
-        }
+/**
+ * ES5 兼容的 Fisher-Yates 洗牌函數
+ * 優先使用 window.crypto，若不可用則在控制台警告並回退至 Math.random()
+ */
+function fisherYatesShuffle(array) {
+    var hasCrypto = window.crypto && typeof window.crypto.getRandomValues === 'function';
     
-        function generateRandomNumber() {
-            const length1 = parseInt(document.getElementById('lengthInput1').value);
-            
-            // 验证用户输入的长度是否有效
-            if (isNaN(length1) || length1 <= 0) {
-                document.getElementById('result1').textContent = '请输入有效的长度！';
-                return;
-            }
-
-            const characters = '0123456789';
-            let result = '';
-            
-            for (let i = 0; i < length1; i++) {
-                result += characters.charAt(Math.floor(Math.random() * characters.length));
-            }
-
-            // 显示生成的随机字符串
-            document.getElementById('result1').textContent = '生成的随机数字是：' + result;
+    // 如果 crypto不可用，在控制台進行警告反饋
+    if (!hasCrypto) {
+        if (typeof console !== 'undefined' && console.warn) {
+            console.warn('[警告] window.crypto API 不可用，系統已自動降級使用 Math.random()。');
         }
+    }
+
+    var randomBuffer = hasCrypto ? new Uint32Array(1) : null;
+
+    for (var i = array.length - 1; i > 0; i--) {
+        var randomIndex = 0;
+        if (hasCrypto) {
+            window.crypto.getRandomValues(randomBuffer);
+            randomIndex = randomBuffer[0] % (i + 1);
+        } else {
+            randomIndex = Math.floor(Math.random() * (i + 1));
+        }
+
+        // ES5 元素交換
+        var temp = array[i];
+        array[i] = array[randomIndex];
+        array[randomIndex] = temp;
+    }
+    return array;
+}
+
+/**
+ * ES5 兼容：生成均勻分佈的隨機字符串
+ */
+function generateRandomString() {
+    var lengthInput = document.getElementById('lengthInput0');
+    var length0 = parseInt(lengthInput.value, 10);
+
+    // 驗證用戶輸入的長度是否有效
+    if (isNaN(length0) || length0 <= 0) {
+        document.getElementById('result0').textContent = '請輸入有效的長度！';
+        return;
+    }
+
+    var charSource = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var characters = charSource.split('');
+    var pool = [];
+
+    // 循環填充字符池
+    while (pool.length < length0) {
+        var chunk = characters.slice(0);
+        fisherYatesShuffle(chunk);
+        pool = pool.concat(chunk);
+    }
+
+    // 截取目標長度並再次全局打亂
+    pool = pool.slice(0, length0);
+    fisherYatesShuffle(pool);
+
+    var result = pool.join('');
+
+    // 顯示生成的隨機字符串
+    document.getElementById('result0').textContent = '生成的隨機字符串是：' + result;
+}
+
+/**
+ * ES5 兼容：生成均勻分佈的隨機數字
+ */
+function generateRandomNumber() {
+    var lengthInput = document.getElementById('lengthInput1');
+    var length1 = parseInt(lengthInput.value, 10);
+
+    // 驗證用戶輸入的長度是否有效
+    if (isNaN(length1) || length1 <= 0) {
+        document.getElementById('result1').textContent = '請輸入有效的長度！';
+        return;
+    }
+
+    var digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    var pool = [];
+
+    // 循環填充數字池
+    while (pool.length < length1) {
+        var chunk = digits.slice(0);
+        fisherYatesShuffle(chunk);
+        pool = pool.concat(chunk);
+    }
+
+    // 截取目標長度並再次全局打亂
+    pool = pool.slice(0, length1);
+    fisherYatesShuffle(pool);
+
+    var result = pool.join('');
+
+    // 顯示生成的隨機數字
+    document.getElementById('result1').textContent = '生成的隨機數字是：' + result;
+}
+
     </script>
 
 </body>
