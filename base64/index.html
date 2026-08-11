@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name='description' content='原站-base64转换器'>
+    <title>base64转换器</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" href="../favicon.ico" >
+    <style>
+      .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    
+    /* 标题区 */
+    .header {
+      margin-bottom: 32px;
+    }
+    .header h1 {
+      font-size: 24px;
+      margin: 0 0 8px 0;
+      color: #111;
+    }
+    .header p {
+      font-size: 14px;
+      margin: 0;
+      color: #666;
+    }
+
+    /* 文本框区块 */
+    .input-section {
+      margin-bottom: 20px;
+    }
+    
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: #555;
+    }
+    
+    .char-count {
+      font-family: monospace;
+      color: #888;
+    }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+      background: #f7f7f7;
+    }
+    textarea:focus {
+      border-color: #3b82f6;
+      background: #fff;
+    }
+
+    /* 按钮组区块：精准控制按钮间距 */
+    .action-group {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;            /* 现代浏览器原生间距 */
+      margin-bottom: 36px;  /* 按钮组与下方区块的大间距 */
+    }
+
+    button {
+      padding: 9px 18px;
+      font-size: 14px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      margin-right: 8px;    /* 降级兼容：保证按钮之间始终有适度间隔 */
+      margin-bottom: 4px;
+    }
+    .btn-blue { background: #3b82f6; color: #fff; }
+    .btn-blue:hover { background: #2563eb; }
+    
+    .btn-light { background: #e0e7ff; color: #3730a3; }
+    .btn-light:hover { background: #c7d2fe; }
+    
+    .btn-gray { background: #e5e7eb; color: #444; }
+    .btn-gray:hover { background: #d1d5db; }
+    
+    .btn-outline { background: #fff; border-color: #ccc; color: #333; }
+    .btn-outline:hover { background: #f3f4f6; }
+    
+    /* 极简行内提示 */
+    .simple-msg {
+      font-size: 13px;
+      margin-left: 8px;
+      display: none;
+    }
+    .msg-success { color: #059669; }
+    .msg-error { color: #dc2626; }
+
+    /* 字节映射区块 */
+    .byte-viewer {
+      background: #f3f4f6;
+      border: 1px dashed #ccc;
+      border-radius: 6px;
+      padding: 16px;
+      margin-top: 40px;
+    }
+    .byte-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 12px;
+    }
+    .byte-content {
+      font-family: monospace;
+      font-size: 13px;
+      color: #333;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+    .no-bytes { color: #999; }
+    </style>
+</head>
+<body>
+    <header>
+        <ul class="ys-head">
+            <li><a href="../index.html">首页</a></li>  
+            <li><a href="../bayinhe.html">八音盒</a></li>  
+            <li><a href="../shop.html">商城</a></li>  
+            <li><a href="https://ys.mihoyo.com/cloud/#/">云原神</a></li>  
+           <li><a href="../tools.html">工具合集</a></li>  
+        </ul>
+    </header>
+    <nav class="banner">
+        <img src="../images/bann.png" alt="">
+    </nav>
+    <div>
+        <h1>base64转换器</h1>
+        <div class="shengyiwu-list">        
+          
+            
+        
+            <!-- 输入区 -->
+            <div class="input-section">
+              <div class="label-row">
+                <span>输入 (INPUT)</span>
+                <span class="char-count" id="inputCount">0 字符</span>
+              </div>
+              <textarea id="inputText" placeholder="请在此输入文本或 Base64 字符串..."></textarea>
+            </div>
+        
+            <!-- 转换按钮区 -->
+            <div class="action-group">
+              <button class="btn-blue" id="btnEncode">文本 转 Base64 (Encode)</button>
+              <button class="btn-light" id="btnDecode">Base64 转 文本 (Decode)</button>
+              <button class="btn-gray" id="btnClear">清空</button>
+              <span class="simple-msg msg-error" id="errorMsg">转换失败：无效的 Base64 格式</span>
+            </div>
+        
+            <!-- 结果区 -->
+            <div class="input-section">
+              <div class="label-row">
+                <span>结果 (RESULT)</span>
+                <span class="char-count" id="resultCount">0 字符</span>
+              </div>
+              <textarea id="resultText" readonly placeholder="转换结果将显示在此..."></textarea>
+            </div>
+        
+            <!-- 复制按钮区 -->
+            <div class="action-group" style="margin-bottom: 0;">
+              <button class="btn-outline" id="btnCopy">复制结果</button>
+              <span class="simple-msg msg-success" id="statusMsg"></span>
+            </div>
+        
+            <!-- 字节映射区 -->
+            <div class="byte-viewer">
+              <div class="byte-header">
+                <span>UTF-8 字节映射 (Hex Bytes)</span>
+                <span id="byteStats">共 0 字节</span>
+              </div>
+              <div class="byte-content" id="hexFlow"></div>
+            </div>
+          
+        </div>
+
+  <script>
+  var inputText = document.getElementById('inputText');
+    var resultText = document.getElementById('resultText');
+    var inputCount = document.getElementById('inputCount');
+    var resultCount = document.getElementById('resultCount');
+    
+    var btnEncode = document.getElementById('btnEncode');
+    var btnDecode = document.getElementById('btnDecode');
+    var btnClear = document.getElementById('btnClear');
+    var btnCopy = document.getElementById('btnCopy');
+    
+    var errorMsg = document.getElementById('errorMsg');
+    var statusMsg = document.getElementById('statusMsg');
+    
+    var byteStats = document.getElementById('byteStats');
+    var hexFlow = document.getElementById('hexFlow');
+
+    inputText.value = "原神启动。";
+
+    function encodeUnicodeBase64(str) {
+      try {
+        return { success: true, result: btoa(unescape(encodeURIComponent(str))) };
+      } catch (e) {
+        return { success: false };
+      }
+    }
+
+    function decodeUnicodeBase64(str) {
+      try {
+        var cleanedStr = str.replace(/\s+/g, '');
+        return { success: true, result: decodeURIComponent(escape(atob(cleanedStr))) };
+      } catch (e) {
+        return { success: false };
+      }
+    }
+
+    function updateByteMap(str) {
+      if (!str) {
+        byteStats.textContent = "共 0 字节";
+        hexFlow.innerHTML = '<span class="no-bytes">无数据。</span>';
+        return;
+      }
+      try {
+        var utf8Bytes = unescape(encodeURIComponent(str));
+        var hexArr = [];
+        for (var i = 0; i < utf8Bytes.length; i++) {
+          var hex = utf8Bytes.charCodeAt(i).toString(16).toUpperCase();
+          if (hex.length < 2) hex = '0' + hex;
+          hexArr.push(hex);
+        }
+        byteStats.textContent = "共 " + utf8Bytes.length + " 字节";
+        hexFlow.innerHTML = hexArr.join(' ');
+      } catch (e) {
+        byteStats.textContent = "无法计算";
+        hexFlow.textContent = "不支持";
+      }
+    }
+
+    var statusTimer;
+    function showStatus(text, isError) {
+      clearTimeout(statusTimer);
+      if (isError) {
+        errorMsg.textContent = text;
+        errorMsg.style.display = 'inline';
+        statusMsg.style.display = 'none';
+        statusTimer = setTimeout(function(){ errorMsg.style.display = 'none'; }, 3000);
+      } else {
+        statusMsg.textContent = text;
+        statusMsg.style.display = 'inline';
+        errorMsg.style.display = 'none';
+        statusTimer = setTimeout(function(){ statusMsg.style.display = 'none'; }, 2000);
+      }
+    }
+
+    function hideMessages() {
+      errorMsg.style.display = 'none';
+      statusMsg.style.display = 'none';
+    }
+
+    function doEncode() {
+      hideMessages();
+      var val = inputText.value;
+      if (!val) {
+        resultText.value = '';
+        updateAll();
+        return;
+      }
+      var res = encodeUnicodeBase64(val);
+      if (res.success) {
+        resultText.value = res.result;
+        updateAll(val);
+      } else {
+        showStatus('转换失败，请检查输入', true);
+      }
+    }
+
+    function doDecode() {
+      hideMessages();
+      var val = inputText.value;
+      if (!val) {
+        resultText.value = '';
+        updateAll();
+        return;
+      }
+      var res = decodeUnicodeBase64(val);
+      if (res.success) {
+        resultText.value = res.result;
+        updateAll(res.result);
+      } else {
+        showStatus('转换失败：无效的 Base64 格式', true);
+      }
+    }
+
+    function doClear() {
+      inputText.value = '';
+      resultText.value = '';
+      updateAll();
+      showStatus('已清空', false);
+    }
+
+    function doCopy() {
+      var val = resultText.value;
+      if (!val) return;
+      
+      resultText.select();
+      try {
+        document.execCommand('copy');
+        showStatus('已复制到剪贴板', false);
+      } catch (err) {
+        showStatus('复制失败', true);
+      }
+    }
+
+    function updateAll(byteStr) {
+      inputCount.textContent = inputText.value.length + " 字符";
+      resultCount.textContent = resultText.value.length + " 字符";
+      updateByteMap(byteStr || '');
+    }
+
+    btnEncode.addEventListener('click', doEncode);
+    btnDecode.addEventListener('click', doDecode);
+    btnClear.addEventListener('click', doClear);
+    btnCopy.addEventListener('click', doCopy);
+    inputText.addEventListener('input', function() {
+      inputCount.textContent = inputText.value.length + " 字符";
+    });
+
+    doEncode();
+
+
+  </script>
+
+    </div>
+</body>
+</html>
