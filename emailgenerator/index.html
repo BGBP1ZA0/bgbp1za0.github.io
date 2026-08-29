@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name='description' content='原站-email文件生成器'>
+  <title>email文件生成器</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="icon" href="../favicon.ico">
+  <style>
+    .form-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .form-group {
+      flex: 1;
+      margin-bottom: 10px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #4a5568;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="datetime-local"],
+    textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #cbd5e0;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    button {
+      width: 100%;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <ul class="ys-head">
+      <li><a href="../index.html">首页</a></li>
+      <li><a href="../bayinhe.html">八音盒</a></li>
+      <li><a href="../shop.html">商城</a></li>
+      <li><a href="https://ys.mihoyo.com/cloud/#/">云原神</a></li>
+      <li><a href="../tools.html">工具合集</a></li>
+    </ul>
+  </header>
+  <nav class="banner">
+    <img src="../images/bann.png" alt="">
+  </nav>
+  <div>
+    <h1>email文件生成器</h1>
+    <div class="shengyiwu-list">
+      <form id="emlForm">
+        <!-- 发件人 姓名 & 邮箱 -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fromName">发件人姓名:</label>
+            <input type="text" id="fromName">
+          </div>
+          <div class="form-group">
+            <label for="fromEmail">发件人邮箱 (From):</label>
+            <input type="email" id="fromEmail">
+          </div>
+        </div>
+
+        <!-- 收件人 姓名 & 邮箱 -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="toName">收件人姓名:</label>
+            <input type="text" id="toName">
+          </div>
+          <div class="form-group">
+            <label for="toEmail">收件人邮箱 (To):</label>
+            <input type="email" id="toEmail">
+          </div>
+        </div>
+
+        <!-- 抄送 & 密送 -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cc">抄送 (Cc):</label>
+            <input type="email" id="cc">
+          </div>
+          <div class="form-group">
+            <label for="bcc">密送 (Bcc):</label>
+            <input type="email" id="bcc">
+          </div>
+        </div>
+
+        <!-- 时间与主题 -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="date">发送时间 (精确到秒):</label>
+            <input type="datetime-local" id="date" step="1">
+          </div>
+          <div class="form-group">
+            <label for="subject">邮件主题 (Subject):</label>
+            <input type="text" id="subject">
+          </div>
+        </div>
+
+        <!-- 文件名 (新增客制化文件名) -->
+        <div class="form-group">
+          <label for="filename">EML 文件名 (可选):</label>
+          <input type="text" id="filename">
+        </div>
+
+        <!-- 正文 -->
+        <div class="form-group">
+          <label for="body">邮件正文 (明文内容):</label>
+          <textarea id="body" placeholder="邮件正文..."></textarea>
+        </div>
+
+        <button type="button" onclick="generateAndDownloadEML()">生成并下载 .eml 文件</button>
+      </form>
+    </div>
+
+    <script>
+      // 自动填充当前时间（精确到秒）
+      window.onload = function () {
+        var now = new Date();
+        var year = now.getFullYear();
+        var month = String(now.getMonth() + 1);
+        if (month.length < 2) month = '0' + month;
+        var day = String(now.getDate());
+        if (day.length < 2) day = '0' + day;
+        var hours = String(now.getHours());
+        if (hours.length < 2) hours = '0' + hours;
+        var minutes = String(now.getMinutes());
+        if (minutes.length < 2) minutes = '0' + minutes;
+        var seconds = String(now.getSeconds());
+        if (seconds.length < 2) seconds = '0' + seconds;
+
+        document.getElementById('date').value = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds;
+      };
+
+      /**
+       * ES5 兼容：UTF-8 -> Base64
+       */
+      function utf8ToBase64(str) {
+        if (!str) return '';
+        var encodedStr = encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function (match, p1) {
+          return String.fromCharCode('0x' + p1);
+        });
+        return window.btoa(encodedStr);
+      }
+
+      /**
+       * 按 76 字符换行 (RFC 2045)
+       */
+      function formatBase64(base64Str) {
+        if (!base64Str) return '';
+        var chunks = [];
+        for (var i = 0; i < base64Str.length; i += 76) {
+          chunks.push(base64Str.substring(i, i + 76));
+        }
+        return chunks.join('\r\n');
+      }
+
+      /**
+       * 编码 Header 字段（若含中文则转为 RFC 2047 格式）
+       */
+      function encodeHeaderValue(text) {
+        if (!text) return '';
+        if (/[^\x00-\x7F]/.test(text)) {
+          return '=?utf-8?B?' + utf8ToBase64(text) + '?=';
+        }
+        return text;
+      }
+
+      /**
+       * 格式化姓名和邮箱
+       */
+      function formatAddressHeader(headerName, name, email) {
+        if (!name && !email) return '';
+        var encodedName = encodeHeaderValue(name);
+        var addr = '';
+        if (encodedName && email) {
+          addr = encodedName + ' <' + email + '>';
+        } else if (encodedName) {
+          addr = encodedName;
+        } else {
+          addr = '<' + email + '>';
+        }
+        return headerName + ':\r\n\t' + addr;
+      }
+
+      /**
+       * 生成 RFC 2822 时间格式
+       */
+      function formatRFC2822Date(dateObj) {
+        var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        var dayName = days[dateObj.getDay()];
+        var day = dateObj.getDate();
+        var monthName = months[dateObj.getMonth()];
+        var year = dateObj.getFullYear();
+
+        var h = String(dateObj.getHours()); if (h.length < 2) h = '0' + h;
+        var m = String(dateObj.getMinutes()); if (m.length < 2) m = '0' + m;
+        var s = String(dateObj.getSeconds()); if (s.length < 2) s = '0' + s;
+
+        var tzOffsetMinutes = -dateObj.getTimezoneOffset();
+        var sign = tzOffsetMinutes >= 0 ? '+' : '-';
+        var absOffset = Math.abs(tzOffsetMinutes);
+        var tzHours = String(Math.floor(absOffset / 60)); if (tzHours.length < 2) tzHours = '0' + tzHours;
+        var tzMins = String(absOffset % 60); if (tzMins.length < 2) tzMins = '0' + tzMins;
+
+        return dayName + ', ' + day + ' ' + monthName + ' ' + year + ' ' + h + ':' + m + ':' + s + ' ' + sign + tzHours + tzMins;
+      }
+
+      /**
+       * 处理导出的文件名逻辑
+       */
+      function getExportFileName(customFileName, subject) {
+        var name = customFileName ? customFileName.trim() : '';
+
+        // 如果填了自定义文件名，移除非安全字符
+        if (name) {
+          name = name.replace(/[\\/:*?"<>|]/g, '_');
+          // 如果用户填写时没带 .eml 后缀，自动补全
+          if (!/\.eml$/i.test(name)) {
+            name += '.eml';
+          }
+          return name;
+        }
+
+        // 未填写自定义文件名时，退回到使用主题
+        if (subject) {
+          var safeSubject = subject.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_').substring(0, 30);
+          return (safeSubject || 'email') + '.eml';
+        }
+
+        return 'email.eml';
+      }
+
+      function generateAndDownloadEML() {
+        var fromName = document.getElementById('fromName').value;
+        var fromEmail = document.getElementById('fromEmail').value;
+        var toName = document.getElementById('toName').value;
+        var toEmail = document.getElementById('toEmail').value;
+        var cc = document.getElementById('cc').value;
+        var bcc = document.getElementById('bcc').value;
+        var dateVal = document.getElementById('date').value;
+        var subject = document.getElementById('subject').value;
+        var customFileName = document.getElementById('filename').value;
+        var bodyText = document.getElementById('body').value;
+
+        // 1. 构造时间头
+        var dateObj = dateVal ? new Date(dateVal) : new Date();
+        var dateHeader = formatRFC2822Date(dateObj);
+
+        // 2. 构造 HTML 正文
+        var htmlBody = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body>' +
+          bodyText.replace(/\n/g, '<br>') +
+          '</body></html>';
+        var formattedBase64Body = formatBase64(utf8ToBase64(htmlBody));
+
+        // 3. 构造 Header 数组
+        var headers = [];
+        headers.push('MIME-Version: 1.0');
+        headers.push('Date: ' + dateHeader);
+
+        var fromHeader = formatAddressHeader('From', fromName, fromEmail);
+        if (fromHeader) headers.push(fromHeader);
+
+        if (subject) {
+          headers.push('Subject: ' + encodeHeaderValue(subject));
+          headers.push('Thread-Topic: ' + encodeHeaderValue(subject));
+        }
+
+        var toHeader = formatAddressHeader('To', toName, toEmail);
+        if (toHeader) headers.push(toHeader);
+
+        if (cc) headers.push('Cc: ' + encodeHeaderValue(cc));
+        if (bcc) headers.push('Bcc: ' + encodeHeaderValue(bcc));
+
+        headers.push('Content-Transfer-Encoding: base64');
+        headers.push('Content-Type: text/html; charset="utf-8"');
+
+        var emlContent = headers.join('\r\n') + '\r\n\r\n' + formattedBase64Body;
+
+        // 4. 计算文件名并触发下载
+        var fileName = getExportFileName(customFileName, subject);
+        var blob = new Blob([emlContent], { type: 'message/rfc822;charset=utf-8' });
+
+        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+          window.navigator.msSaveOrOpenBlob(blob, fileName);
+        } else {
+          var downloadUrl = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = downloadUrl;
+          a.download = fileName;
+
+          document.body.appendChild(a);
+          a.click();
+
+          setTimeout(function () {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(downloadUrl);
+          }, 100);
+        }
+      }
+    </script>
+
+  </div>
+</body>
+
+</html>
