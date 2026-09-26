@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="原站-base64 to file 转换器">
+    <title>base64 to file 转换器</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" href="../favicon.ico">
+    <style>
+        
+        /* 文本框区块 */
+        .input-section {
+            margin-bottom: 20px;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .char-count {
+            font-family: monospace;
+            color: #888;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: vertical;
+            outline: none;
+            background: #f7f7f7;
+        }
+
+        textarea:focus {
+            border-color: #3b82f6;
+            background: #fff;
+        }
+
+        /* 按钮组区块 */
+        .action-group {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 36px;
+        }
+
+        button {
+            padding: 9px 18px;
+            font-size: 14px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            margin-right: 8px;
+            margin-bottom: 4px;
+        }
+
+        .btn-blue {
+            background: #3b82f6;
+            color: #fff;
+        }
+
+        .btn-blue:hover {
+            background: #2563eb;
+        }
+
+        .btn-light {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .btn-light:hover {
+            background: #c7d2fe;
+        }
+
+        .btn-gray {
+            background: #e5e7eb;
+            color: #444;
+        }
+
+        .btn-gray:hover {
+            background: #d1d5db;
+        }
+
+        .btn-outline {
+            background: #fff;
+            border-color: #ccc;
+            color: #333;
+        }
+
+        .btn-outline:hover {
+            background: #f3f4f6;
+        }
+
+        /* 极简行内提示 */
+        .simple-msg {
+            font-size: 13px;
+            margin-left: 8px;
+            display: none;
+        }
+
+        .msg-success {
+            color: #059669;
+        }
+
+        .msg-error {
+            color: #dc2626;
+        }
+
+        /* 字节映射区块 */
+        .byte-viewer {
+            background: #f3f4f6;
+            border: 1px dashed #ccc;
+            border-radius: 6px;
+            padding: 16px;
+            margin-top: 40px;
+        }
+
+        .byte-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 12px;
+        }
+
+        .byte-content {
+            font-family: monospace;
+            font-size: 13px;
+            color: #333;
+            word-break: break-all;
+            line-height: 1.6;
+        }
+
+        .no-bytes {
+            color: #999;
+        }
+
+        /* 文件选择框：沿用输入区的视觉 */
+        .file-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #f7f7f7;
+            font-size: 14px;
+        }
+
+        .file-info {
+            margin-top: 8px;
+            font-family: monospace;
+            font-size: 13px;
+            color: #888;
+            word-break: break-all;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <ul class="ys-head">
+            <li><a href="../index.html">首页</a></li>
+            <li><a href="../bayinhe.html">八音盒</a></li>
+            <li><a href="../shop.html">商城</a></li>
+            <li><a href="https://ys.mihoyo.com/cloud/#/">云原神</a></li>
+            <li><a href="../tools.html">工具合集</a></li>
+        </ul>
+    </header>
+
+    <nav class="banner">
+        <img src="../images/bann.png" alt="">
+    </nav>
+
+    <div>
+        <h1>base64 to file 转换器</h1>
+
+        <div class="shengyiwu-list">
+
+            <!-- 文件输入区 -->
+            <div class="input-section">
+                <div class="label-row">
+                    <span>文件输入 (FILE INPUT)</span>
+                    <span class="char-count" id="fileStats">未选择</span>
+                </div>
+
+                <input class="file-input" type="file" id="fileInput">
+
+                <div class="file-info" id="fileInfo">
+                    请选择要转换的文件。
+                </div>
+            </div>
+
+            <!-- base64 输入区 -->
+            <div class="input-section">
+                <div class="label-row">
+                    <span>输入 (INPUT)</span>
+                    <span class="char-count" id="inputCount">0 字符</span>
+                </div>
+
+                <textarea id="inputText" placeholder="请在此输入 Base64 字符串..."></textarea>
+            </div>
+
+            <!-- 转换按钮区 -->
+            <div class="action-group">
+                <button class="btn-blue" id="btnEncode">文件 转 base64 (Encode)</button>
+                <button class="btn-light" id="btnDecode">base64 转 文件 (Decode)</button>
+                <button class="btn-gray" id="btnClear">清空</button>
+                <span class="simple-msg msg-error" id="errorMsg">
+                    转换失败：无效的 Base64 格式
+                </span>
+            </div>
+
+            <!-- 结果区 -->
+            <div class="input-section">
+                <div class="label-row">
+                    <span>结果 (RESULT)</span>
+                    <span class="char-count" id="resultCount">0 字符</span>
+                </div>
+
+                <textarea id="resultText" readonly placeholder="转换结果将显示在此..."></textarea>
+            </div>
+
+            <!-- 复制按钮区 -->
+            <div class="action-group" style="margin-bottom: 0;">
+                <button class="btn-outline" id="btnCopy">复制结果</button>
+                <button class="btn-outline" id="btnSave">保存结果</button>
+                <span class="simple-msg msg-success" id="statusMsg"></span>
+            </div>
+
+            <!-- 文件信息区 -->
+            <div class="input-section">
+                <div class="label-row">
+                    <span>文件信息 (FILE INFO)</span>
+                    <span class="char-count" id="detectedType">未知</span>
+                </div>
+
+                <div class="file-info" id="resultInfo">
+                    尚未生成或还原文件。
+                </div>
+            </div>
+
+            <!-- 字节映射区 -->
+            <div class="byte-viewer">
+                <div class="byte-header">
+                    <span>UTF-8 字节映射 (Hex Bytes)</span>
+                    <span id="byteStats">共 0 字节</span>
+                </div>
+                <div class="byte-content" id="hexFlow">
+                    <span class="no-bytes">无数据。</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        var fileInput = document.getElementById('fileInput');
+        var fileInfo = document.getElementById('fileInfo');
+        var fileStats = document.getElementById('fileStats');
+
+        var inputText = document.getElementById('inputText');
+        var resultText = document.getElementById('resultText');
+        var inputCount = document.getElementById('inputCount');
+        var resultCount = document.getElementById('resultCount');
+
+        var btnEncode = document.getElementById('btnEncode');
+        var btnDecode = document.getElementById('btnDecode');
+        var btnClear = document.getElementById('btnClear');
+        var btnCopy = document.getElementById('btnCopy');
+        var btnSave = document.getElementById('btnSave');
+
+        var errorMsg = document.getElementById('errorMsg');
+        var statusMsg = document.getElementById('statusMsg');
+
+        var resultInfo = document.getElementById('resultInfo');
+        var detectedType = document.getElementById('detectedType');
+
+        var byteStats = document.getElementById('byteStats');
+        var hexFlow = document.getElementById('hexFlow');
+
+        var selectedFile = null;
+
+        /*
+         * 这里保留原项目的 UTF-8 Base64 写法。
+         * Chrome 46 支持 btoa / atob / encodeURIComponent / decodeURIComponent。
+         */
+        function encodeUnicodeBase64(str) {
+            try {
+                return {
+                    success: true,
+                    result: btoa(unescape(encodeURIComponent(str)))
+                };
+            } catch (e) {
+                return { success: false };
+            }
+        }
+
+        function decodeUnicodeBase64(str) {
+            try {
+                var cleanedStr = str.replace(/\s+/g, '');
+
+                if (!/^[A-Za-z0-9+\/]*={0,2}$/.test(cleanedStr)) {
+                    return { success: false };
+                }
+
+                if (cleanedStr.length % 4 !== 0) {
+                    return { success: false };
+                }
+
+                return {
+                    success: true,
+                    result: decodeURIComponent(escape(atob(cleanedStr)))
+                };
+            } catch (e) {
+                return { success: false };
+            }
+        }
+
+        /*
+         * ArrayBuffer -> Base64
+         * 不使用 TextEncoder / async / Promise，
+         * 保证 Chrome 46 可以运行。
+         */
+        function arrayBufferToBase64(buffer) {
+            var bytes = new Uint8Array(buffer);
+            var binary = '';
+            var chunkSize = 0x8000;
+            var i;
+            var j;
+            var end;
+            var chunk;
+
+            for (i = 0; i < bytes.length; i += chunkSize) {
+                end = Math.min(i + chunkSize, bytes.length);
+                chunk = [];
+
+                for (j = i; j < end; j++) {
+                    chunk.push(bytes[j]);
+                }
+
+                binary += String.fromCharCode.apply(null, chunk);
+            }
+
+            return btoa(binary);
+        }
+
+        /*
+         * Base64 -> Uint8Array
+         */
+        function base64ToBytes(base64) {
+            var cleaned = base64.replace(/\s+/g, '');
+            var binary;
+            var bytes;
+            var i;
+
+            if (!cleaned) {
+                throw new Error('没有 Base64 数据');
+            }
+
+            if (!/^[A-Za-z0-9+\/]*={0,2}$/.test(cleaned)) {
+                throw new Error('Base64 中存在无效字符');
+            }
+
+            if (cleaned.length % 4 !== 0) {
+                throw new Error('Base64 长度不正确');
+            }
+
+            binary = atob(cleaned);
+            bytes = new Uint8Array(binary.length);
+
+            for (i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+
+            return bytes;
+        }
+
+        /*
+         
+         * meta=<Base64(JSON)>
+         * data=
+         * <Base64>
+         *
+         * metadata 自己再用 Base64 编码，
+         * 所以中文文件名和特殊字符不会破坏格式。
+         */
+        function makeverb64(file, base64) {
+            var meta = {
+                name: file.name,
+                type: file.type || 'application/octet-stream',
+                size: file.size
+            };
+
+            var metaText = JSON.stringify(meta);
+            var metaBase64 = encodeUnicodeBase64(metaText);
+
+            if (!metaBase64.success) {
+                throw new Error('无法生成文件 metadata');
+            }
+
+            return 'verb64/1\n' +
+                'meta=' + metaBase64.result + '\n' +
+                'data=\n' +
+                base64;
+        }
+
+        function parseverb64(text) {
+            var normalized = text.replace(/^\s+|\s+$/g, '');
+            var lines;
+            var metaLine = null;
+            var dataIndex = -1;
+            var i;
+            var metaResult;
+            var meta;
+            var data;
+
+            
+            if (normalized.indexOf('verb64/') !== 0) {
+                return {
+                    legacy: true,
+                    meta: null,
+                    data: normalized
+                };
+            }
+
+            lines = normalized.split(/\r?\n/);
+
+            if (lines[0] !== 'verb64/1') {
+                throw new Error('不支持的自封装参数。' + lines[0]);
+            }
+
+            for (i = 1; i < lines.length; i++) {
+                if (lines[i].indexOf('meta=') === 0) {
+                    metaLine = lines[i].substring(5);
+                }
+
+                if (lines[i] === 'data=') {
+                    dataIndex = i;
+                    break;
+                }
+            }
+
+            if (!metaLine || dataIndex < 0) {
+                throw new Error('自封装格式不完整。');
+            }
+
+            metaResult = decodeUnicodeBase64(metaLine);
+
+            if (!metaResult.success) {
+                throw new Error('自封装 metadata 无法解析。');
+            }
+
+            try {
+                meta = JSON.parse(metaResult.result);
+            } catch (e) {
+                throw new Error('自封装 metadata 不是有效 JSON。');
+            }
+
+            data = lines.slice(dataIndex + 1).join('');
+
+            if (!data) {
+                throw new Error('没有自封装数据。');
+            }
+
+            return {
+                legacy: false,
+                meta: meta,
+                data: data
+            };
+        }
+
+        /*
+         * 文件头识别。
+         * 旧版纯 Base64 没有文件名时，
+         * 用这里自动推测扩展名。
+         */
+        function startsWithBytes(bytes, signature) {
+            var i;
+
+            if (bytes.length < signature.length) {
+                return false;
+            }
+
+            for (i = 0; i < signature.length; i++) {
+                if (bytes[i] !== signature[i]) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        function asciiAt(bytes, offset, text) {
+            var i;
+
+            if (bytes.length < offset + text.length) {
+                return false;
+            }
+
+            for (i = 0; i < text.length; i++) {
+                if (bytes[offset + i] !== text.charCodeAt(i)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        function detectFileType(bytes) {
+            if (startsWithBytes(bytes, [137, 80, 78, 71, 13, 10, 26, 10])) {
+                return { ext: '.png', mime: 'image/png', name: 'PNG' };
+            }
+
+            if (startsWithBytes(bytes, [255, 216, 255])) {
+                return { ext: '.jpg', mime: 'image/jpeg', name: 'JPEG' };
+            }
+
+            if (asciiAt(bytes, 0, 'GIF87a') || asciiAt(bytes, 0, 'GIF89a')) {
+                return { ext: '.gif', mime: 'image/gif', name: 'GIF' };
+            }
+
+            if (asciiAt(bytes, 0, 'RIFF') && asciiAt(bytes, 8, 'WEBP')) {
+                return { ext: '.webp', mime: 'image/webp', name: 'WebP' };
+            }
+
+            if (asciiAt(bytes, 0, 'BM')) {
+                return { ext: '.bmp', mime: 'image/bmp', name: 'BMP' };
+            }
+
+            if (asciiAt(bytes, 0, '%PDF-')) {
+                return { ext: '.pdf', mime: 'application/pdf', name: 'PDF' };
+            }
+
+            if (startsWithBytes(bytes, [80, 75, 3, 4]) ||
+                startsWithBytes(bytes, [80, 75, 5, 6]) ||
+                startsWithBytes(bytes, [80, 75, 7, 8])) {
+                return { ext: '.zip', mime: 'application/zip', name: 'ZIP' };
+            }
+
+            if (startsWithBytes(bytes, [55, 122, 188, 175, 39, 28])) {
+                return { ext: '.7z', mime: 'application/x-7z-compressed', name: '7-Zip' };
+            }
+
+            if (asciiAt(bytes, 0, 'Rar!\u001A\u0007\u0000') ||
+                asciiAt(bytes, 0, 'Rar!\u001A\u0007\u0001\u0000')) {
+                return { ext: '.rar', mime: 'application/vnd.rar', name: 'RAR' };
+            }
+
+            if (startsWithBytes(bytes, [31, 139])) {
+                return { ext: '.gz', mime: 'application/gzip', name: 'GZIP' };
+            }
+
+            if (asciiAt(bytes, 0, 'BZh')) {
+                return { ext: '.bz2', mime: 'application/x-bzip2', name: 'BZip2' };
+            }
+
+            if (startsWithBytes(bytes, [253, 55, 122, 88, 90, 0])) {
+                return { ext: '.xz', mime: 'application/x-xz', name: 'XZ' };
+            }
+
+            if (asciiAt(bytes, 0, 'fLaC')) {
+                return { ext: '.flac', mime: 'audio/flac', name: 'FLAC' };
+            }
+
+            if (asciiAt(bytes, 0, 'OggS')) {
+                return { ext: '.ogg', mime: 'audio/ogg', name: 'Ogg' };
+            }
+
+            if (asciiAt(bytes, 0, 'ID3')) {
+                return { ext: '.mp3', mime: 'audio/mpeg', name: 'MP3' };
+            }
+
+            if (startsWithBytes(bytes, [255, 251]) ||
+                startsWithBytes(bytes, [255, 243]) ||
+                startsWithBytes(bytes, [255, 242])) {
+                return { ext: '.mp3', mime: 'audio/mpeg', name: 'MP3' };
+            }
+
+            if (asciiAt(bytes, 0, 'RIFF') && asciiAt(bytes, 8, 'WAVE')) {
+                return { ext: '.wav', mime: 'audio/wav', name: 'WAV' };
+            }
+
+            if (asciiAt(bytes, 4, 'ftyp')) {
+                return { ext: '.mp4', mime: 'video/mp4', name: 'MP4 / ISO Base Media' };
+            }
+
+            if (asciiAt(bytes, 0, 'SQLite format 3')) {
+                return { ext: '.sqlite', mime: 'application/vnd.sqlite3', name: 'SQLite' };
+            }
+
+            if (startsWithBytes(bytes, [127, 69, 76, 70])) {
+                return { ext: '.elf', mime: 'application/octet-stream', name: 'ELF' };
+            }
+
+            if (startsWithBytes(bytes, [77, 90])) {
+                return { ext: '.exe', mime: 'application/octet-stream', name: 'Windows PE / EXE' };
+            }
+
+            return {
+                ext: '.bin',
+                mime: 'application/octet-stream',
+                name: '未知二进制文件'
+            };
+        }
+
+        /* 文件大小 */
+        function formatSize(size) {
+            if (size < 1024) {
+                return size + ' B';
+            }
+
+            if (size < 1024 * 1024) {
+                return (size / 1024).toFixed(2) + ' KB';
+            }
+
+            return (size / 1024 / 1024).toFixed(2) + ' MB';
+        }
+
+        /* 文件头 Hex */
+        function updateByteMapFromBytes(bytes) {
+            var max = Math.min(bytes.length, 512);
+            var hexArr = [];
+            var i;
+            var hex;
+
+            if (!bytes.length) {
+                byteStats.textContent = '共 0 字节';
+                hexFlow.innerHTML = '<span class="no-bytes">无数据。</span>';
+                return;
+            }
+
+            for (i = 0; i < max; i++) {
+                hex = bytes[i].toString(16).toUpperCase();
+
+                if (hex.length < 2) {
+                    hex = '0' + hex;
+                }
+
+                hexArr.push(hex);
+            }
+
+            byteStats.textContent = '共 ' + bytes.length + ' 字节';
+            hexFlow.innerHTML = hexArr.join(' ');
+
+            if (bytes.length > 512) {
+                hexFlow.innerHTML += ' ...';
+            }
+        }
+
+        /* HTML 转义 */
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, function (c) {
+                var map = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                };
+
+                return map[c];
+            });
+        }
+
+        /* 状态提示 */
+        var statusTimer;
+
+        function showStatus(text, isError) {
+            clearTimeout(statusTimer);
+
+            if (isError) {
+                errorMsg.textContent = text;
+                errorMsg.style.display = 'inline';
+                statusMsg.style.display = 'none';
+
+                statusTimer = setTimeout(function () {
+                    errorMsg.style.display = 'none';
+                }, 3000);
+            } else {
+                statusMsg.textContent = text;
+                statusMsg.style.display = 'inline';
+                errorMsg.style.display = 'none';
+
+                statusTimer = setTimeout(function () {
+                    statusMsg.style.display = 'none';
+                }, 2000);
+            }
+        }
+
+        function hideMessages() {
+            errorMsg.style.display = 'none';
+            statusMsg.style.display = 'none';
+        }
+
+        /* 文件选择 */
+        fileInput.addEventListener('change', function () {
+            if (!fileInput.files || !fileInput.files.length) {
+                selectedFile = null;
+                fileStats.textContent = '未选择。';
+                fileInfo.textContent = '请选择要转换的文件。';
+                return;
+            }
+
+            selectedFile = fileInput.files[0];
+
+            fileStats.textContent = formatSize(selectedFile.size);
+
+            fileInfo.innerHTML =
+                '文件名：' + escapeHtml(selectedFile.name) +
+                '<br>文件类型：' + escapeHtml(selectedFile.type || 'application/octet-stream') +
+                '<br>文件大小：' + formatSize(selectedFile.size);
+        });
+
+        /* 文件 -> verb64 */
+        btnEncode.addEventListener('click', function () {
+            var reader;
+
+            hideMessages();
+
+            if (!selectedFile) {
+                showStatus('请先选择文件', true);
+                return;
+            }
+
+            reader = new FileReader();
+
+            reader.onload = function (e) {
+                try {
+                    var bytes = new Uint8Array(e.target.result);
+                    var base64 = arrayBufferToBase64(e.target.result);
+
+                    inputText.value = makeverb64(selectedFile, base64);
+                    resultText.value = inputText.value;
+
+                    inputCount.textContent = inputText.value.length + ' 字符';
+                    resultCount.textContent = resultText.value.length + ' 字符';
+
+                    updateByteMapFromBytes(bytes);
+
+                    detectedType.textContent =
+                        selectedFile.type || 'application/octet-stream';
+
+                    resultInfo.innerHTML =
+                        '文件名：' + escapeHtml(selectedFile.name) +
+                        '<br>文件类型：' +
+                        escapeHtml(selectedFile.type || 'application/octet-stream') +
+                        '<br>原始大小：' + formatSize(selectedFile.size) +
+                        '<br>verb64 长度：' + resultText.value.length + ' 字符';
+
+                    showStatus('转换完成', false);
+                } catch (e) {
+                    showStatus('转换失败，请检查文件', true);
+                }
+            };
+
+            reader.onerror = function () {
+                showStatus('文件读取失败', true);
+            };
+
+            reader.readAsArrayBuffer(selectedFile);
+        });
+
+        /* verb64 / Base64 -> 文件 */
+        btnDecode.addEventListener('click', function () {
+            var parsed;
+            var bytes;
+            var detected;
+            var name;
+            var mime;
+            var blob;
+            var url;
+            var a;
+
+            hideMessages();
+
+            try {
+                /*
+                 * 如果用户把结果复制回输入框，
+                 * 输入框就是主要解码来源。
+                 * 如果输入框为空，则尝试使用结果框。
+                 */
+                var source = inputText.value || resultText.value;
+
+                if (!source) {
+                    showStatus('请先输入经 Base64 加密后的文本。', true);
+                    return;
+                }
+
+                parsed = parseverb64(source);
+                bytes = base64ToBytes(parsed.data);
+                detected = detectFileType(bytes);
+
+                if (!parsed.legacy && parsed.meta) {
+                    name = parsed.meta.name || null;
+                    mime = parsed.meta.type || null;
+                } else {
+                    name = null;
+                    mime = null;
+                }
+
+                /*
+                 * 新格式：
+                 * 优先使用嵌入的原始文件名。
+                 *
+                 * 旧版纯 Base64：
+                 * 自动根据文件头决定扩展名。
+                 */
+                if (!name) {
+                    name = 'decoded-file' + detected.ext;
+                } else if (!/\.[A-Za-z0-9]{1,12}$/.test(name)) {
+                    name += detected.ext;
+                }
+
+                if (!mime || mime === 'application/octet-stream') {
+                    mime = detected.mime;
+                }
+
+                blob = new Blob([bytes], {
+                    type: mime
+                });
+
+                url = (window.URL || window.webkitURL).createObjectURL(blob);
+
+                a = document.createElement('a');
+                a.href = url;
+                a.download = name;
+                a.style.display = 'none';
+
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+
+                setTimeout(function () {
+                    (window.URL || window.webkitURL).revokeObjectURL(url);
+                }, 1000);
+
+                updateByteMapFromBytes(bytes);
+
+                detectedType.textContent = detected.name;
+
+                resultInfo.innerHTML =
+                    '下载文件名：' + escapeHtml(name) +
+                    '<br>文件类型：' + escapeHtml(mime) +
+                    '<br>文件大小：' + formatSize(bytes.length) +
+                    '<br>文件头判断：' + escapeHtml(detected.name) +
+                    (parsed.legacy
+                        ? '<br>本次为旧版纯 Base64，扩展名由文件头自动判断。'
+                        : '<br>本次使用文本内嵌信息恢复文件名。');
+
+                showStatus('文件已还原并下载', false);
+
+            } catch (e) {
+                showStatus('转换失败：无效的 Base64 格式', true);
+            }
+        });
+
+        /* 输入框字符统计 */
+        inputText.addEventListener('input', function () {
+            inputCount.textContent = inputText.value.length + ' 字符';
+        });
+
+        /* 复制 */
+        btnCopy.addEventListener('click', function () {
+            var val = resultText.value;
+
+            if (!val) {
+                return;
+            }
+
+            resultText.focus();
+            resultText.select();
+
+            try {
+                document.execCommand('copy');
+                showStatus('已复制到剪贴板', false);
+            } catch (err) {
+                showStatus('复制失败', true);
+            }
+        });
+
+        /* 保存 verb64 文字 */
+        btnSave.addEventListener('click', function () {
+            var val = resultText.value;
+            var blob;
+            var url;
+            var a;
+
+            if (!val) {
+                return;
+            }
+
+            blob = new Blob(
+                [val],
+                { type: 'text/plain;charset=utf-8' }
+            );
+
+            url = (window.URL || window.webkitURL).createObjectURL(blob);
+
+            a = document.createElement('a');
+            a.href = url;
+            a.download = 'file.verb64.txt';
+            a.style.display = 'none';
+
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            setTimeout(function () {
+                (window.URL || window.webkitURL).revokeObjectURL(url);
+            }, 1000);
+
+            showStatus('已保存加密后的文字。', false);
+        });
+
+        /* 清空 */
+        btnClear.addEventListener('click', function () {
+            selectedFile = null;
+
+            fileInput.value = '';
+
+            inputText.value = '';
+            resultText.value = '';
+
+            inputCount.textContent = '0 字符';
+            resultCount.textContent = '0 字符';
+
+            fileStats.textContent = '未选择';
+            fileInfo.textContent = '请选择要转换的文件。';
+
+            detectedType.textContent = '未知';
+            resultInfo.textContent = '尚未生成或还原文件。';
+
+            byteStats.textContent = '共 0 字节';
+            hexFlow.innerHTML = '<span class="no-bytes">无数据。</span>';
+
+            hideMessages();
+            showStatus('已清空', false);
+        });
+    </script>
+</body>
+
+</html>
