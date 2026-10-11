@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name='description' content='原站-Unicode Ext-B字符工具页面'>
+  <title>Unicode字符工具页面</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="icon" href="../favicon.ico">
+  <style>
+    @font-face {
+      font-family: "ExtB";
+      src: url("./extb.ttc") format("truetype");
+    }
+
+    #extb-result {
+      font-family: "ExtB", serif;
+      font-size: 64px;
+      margin: 16px 0;
+    }
+
+    #extb-editor {
+      box-sizing: border-box;
+      width: 100%;
+      min-height: 180px;
+      padding: 10px;
+      border: 1px solid #aaa;
+      overflow-wrap: anywhere;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      font-family: "ExtB", sans-serif;
+      font-size: 24px;
+      line-height: 1.8;
+    }
+
+    #extb-editor:focus {
+      outline: 1px solid #6688cc;
+    }
+
+    button {
+      margin: 4px 2px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <ul class="ys-head">
+      <li><a href="../index.html">首页</a></li>
+      <li><a href="../bayinhe.html">八音盒</a></li>
+      <li><a href="../shop.html">商城</a></li>
+      <li><a href="https://ys.mihoyo.com/cloud/#/">云原神</a></li>
+      <li><a href="../tools.html">工具合集</a></li>
+    </ul>
+  </header>
+  <nav class="banner">
+    <img src="../images/bann.png" alt="">
+  </nav>
+  <div>
+    <h1>Unicode字符工具页面</h1>
+    <div class="shengyiwu-list">
+      <p style="color: #ddaacc;">嗷呜，这个功能可以通过输入Unicode编码，精准定位到正确的Unicode Ext-B字符，并将其复制到剪贴板哦~~~</p><br>  
+      <label for="unicode-input">Unicode 编码：U+</label>
+      <input id="unicode-input" type="text" value="20000" placeholder="例如 20000">
+
+      <button id="unicode-search" type="button">查询</button>
+
+      <div id="extb-result"></div>
+      <div id="unicode-info"></div>
+
+      <button id="unicode-copy" type="button">复制汉字</button>
+      <button id="unicode-copy-code" type="button">复制编码</button>
+      <br><br>  
+      <hr><br>    
+
+      <h3>Unicode字符显示框</h3><br>
+      <p style="color: #ddaacc;">嗷呜，这个富文本可以粘贴手机复制的文字，将文字渲染为正确的Unicode Ext-B字符。</p>
+      <br>
+      <div id="extb-editor" contenteditable="true" role="textbox" aria-multiline="true"></div>
+<br><br>
+      <p>
+        <button id="extb-editor-clear" type="button">清空</button>
+        <button id="extb-editor-copy" type="button">复制文字</button>
+      </p>
+
+      <div id="extb-editor-info"></div>
+
+    </div>
+
+    <script>
+      (function () {
+        var input = document.getElementById("unicode-input");
+        var result = document.getElementById("extb-result");
+        var info = document.getElementById("unicode-info");
+        var editor = document.getElementById("extb-editor");
+        var editorInfo = document.getElementById("extb-editor-info");
+
+        var currentChar = "";
+        var currentCode = "";
+
+        /*
+         * Unicode 码位转 UTF-16 字符串。
+         * 兼容 ES5，不使用 String.fromCodePoint。
+         */
+        function fromCodePoint(cp) {
+          var high;
+          var low;
+
+          if (cp <= 0xFFFF) {
+            return String.fromCharCode(cp);
+          }
+
+          cp -= 0x10000;
+          high = 0xD800 + (cp >> 10);
+          low = 0xDC00 + (cp & 0x3FF);
+
+          return String.fromCharCode(high, low);
+        }
+
+        function search() {
+          var value = input.value.replace(/^\s+|\s+$/g, "");
+          var cp;
+          var hex;
+
+          value = value.replace(/^U\+/i, "");
+          value = value.replace(/^0x/i, "");
+
+          if (!/^[0-9a-fA-F]{1,6}$/.test(value)) {
+            info.innerHTML = "请输入有效的十六进制编码。";
+            return;
+          }
+
+          cp = parseInt(value, 16);
+
+          if (cp < 0x20000 || cp > 0x2A6DF) {
+            info.innerHTML = "此码位不在 CJK 扩展 B 范围内。";
+            return;
+          }
+
+          hex = cp.toString(16).toUpperCase();
+
+          while (hex.length < 5) {
+            hex = "0" + hex;
+          }
+
+          currentChar = fromCodePoint(cp);
+          currentCode = "U+" + hex;
+
+          result.innerHTML = "";
+          result.appendChild(document.createTextNode(currentChar));
+
+          info.innerHTML = currentCode;
+        }
+
+        /*
+         * Chrome 46 兼容的传统剪贴簿方法。
+         */
+        function copyText(text, target) {
+          var textarea = document.createElement("textarea");
+          var success = false;
+
+          textarea.value = text;
+          textarea.setAttribute("readonly", "readonly");
+          textarea.style.position = "absolute";
+          textarea.style.left = "-9999px";
+          textarea.style.top = "0";
+
+          document.body.appendChild(textarea);
+          textarea.focus();
+          textarea.select();
+
+          try {
+            success = document.execCommand("copy");
+          } catch (e) {
+            success = false;
+          }
+
+          document.body.removeChild(textarea);
+
+          target.innerHTML = success
+            ? "复制成功。"
+            : "复制失败，请手动选取文字。";
+        }
+
+        document.getElementById("unicode-search").onclick = search;
+
+        input.onkeydown = function (event) {
+          event = event || window.event;
+
+          if (event.keyCode === 13) {
+            search();
+          }
+        };
+
+        document.getElementById("unicode-copy").onclick = function () {
+          if (currentChar) {
+            copyText(currentChar, info);
+          }
+        };
+
+        document.getElementById("unicode-copy-code").onclick = function () {
+          if (currentCode) {
+            copyText(currentCode, info);
+          }
+        };
+
+        /*
+         * 富文本框：清空。
+         */
+        document.getElementById("extb-editor-clear").onclick = function () {
+          editor.innerHTML = "";
+          editorInfo.innerHTML = "已清空。";
+          editor.focus();
+        };
+
+        /*
+         * 富文本框：复制纯文本。
+         * innerText 在旧版 Chrome 中可用。
+         */
+        document.getElementById("extb-editor-copy").onclick = function () {
+          var text = editor.innerText;
+
+          if (typeof text !== "string") {
+            text = editor.textContent || "";
+          }
+
+          copyText(text, editorInfo);
+        };
+
+        /*
+         * 不阻止预设贴上行为。
+         * 让浏览器处理手机或计算机的剪贴簿内容。
+         */
+        editor.onpaste = function () {
+          window.setTimeout(function () {
+            editorInfo.innerHTML = "文字已贴上。";
+          }, 0);
+        };
+
+        /*
+         * 初始查询。
+         */
+        search();
+      }());
+
+    </script>
+
+  </div>
+</body>
+
+</html>
