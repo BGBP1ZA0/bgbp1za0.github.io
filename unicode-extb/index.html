@@ -6,17 +6,16 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name='description' content='原站-Unicode Ext-B字符工具页面'>
-  <title>Unicode字符工具页面</title>
+  <title>Unicode Ext-B字符工具页面</title>
   <link rel="stylesheet" href="../style.css">
   <link rel="icon" href="../favicon.ico">
   <style>
-    @font-face {
-      font-family: "ExtB";
-      src: url("./extb.woff") format("woff");
-    }
+  
 
     #extb-result {
-      font-family: "ExtB", serif;
+      font-family: "ExtB",  "MingLiU-ExtB",
+                 "PMingLiU-ExtB",
+                 "MingLiU_HKSCS-ExtB",serif;
       font-size: 64px;
       margin: 16px 0;
     }
@@ -59,9 +58,19 @@
     <img src="../images/bann.png" alt="">
   </nav>
   <div>
-    <h1>Unicode字符工具页面</h1>
+    <h1>Unicode Ext-B字符工具页面</h1>
     <div class="shengyiwu-list">
-      <p style="color: #ddaacc;">嗷呜，这个功能可以通过输入Unicode编码，精准定位到正确的Unicode Ext-B字符，并将其复制到剪贴板哦~~~</p><br>  
+      <p style="color: #ddaacc;">嗷呜。由于Unicode Ext-B字符库过大，请先下载extb.woff，或下载安装extb.ttc字体文件，并在本地先加载它。</p><br>  
+
+      <input type="file" id="font-upload"
+           accept=".ttf,.otf,.woff,.woff2,.ttc">
+
+    <button id="font-reset" type="button">恢复默认字体</button>
+
+    <div id="font-status">当前使用的是默认字体。</div>
+
+    <br><hr><br>
+      <p style="color: #ddaacc;">在这里输入Unicode编码，可以精准定位到正确的Unicode Ext-B字符，并将其复制到剪贴板哦~~~</p><br>  
       <label for="unicode-input">Unicode 编码：U+</label>
       <input id="unicode-input" type="text" value="20000" placeholder="例如 20000">
 
@@ -91,161 +100,270 @@
 
     <script>
       (function () {
-        var input = document.getElementById("unicode-input");
-        var result = document.getElementById("extb-result");
-        var info = document.getElementById("unicode-info");
-        var editor = document.getElementById("extb-editor");
-        var editorInfo = document.getElementById("extb-editor-info");
-
-        var currentChar = "";
-        var currentCode = "";
-
-        /*
-         * Unicode 码位转 UTF-16 字符串。
-         * 兼容 ES5，不使用 String.fromCodePoint。
-         */
-        function fromCodePoint(cp) {
-          var high;
-          var low;
-
-          if (cp <= 0xFFFF) {
-            return String.fromCharCode(cp);
+          var input = document.getElementById("unicode-input");
+          var result = document.getElementById("extb-result");
+          var info = document.getElementById("unicode-info");
+          var editor = document.getElementById("extb-editor");
+          var editorInfo = document.getElementById("extb-editor-info");
+      
+          var fontInput = document.getElementById("font-upload");
+          var fontStatus = document.getElementById("font-status");
+          var fontReset = document.getElementById("font-reset");
+      
+          var currentChar = "";
+          var currentCode = "";
+          var currentUrl = null;
+          var fontStyle = null;
+          var fontGeneration = 0;
+      
+          /*
+           * 将 Unicode 码位转换为 UTF-16 字符串。
+           * 兼容 ES5。
+           */
+          function fromCodePoint(cp) {
+              var high;
+              var low;
+      
+              if (cp <= 0xFFFF) {
+                  return String.fromCharCode(cp);
+              }
+      
+              cp -= 0x10000;
+              high = 0xD800 + (cp >> 10);
+              low = 0xDC00 + (cp & 0x3FF);
+      
+              return String.fromCharCode(high, low);
           }
-
-          cp -= 0x10000;
-          high = 0xD800 + (cp >> 10);
-          low = 0xDC00 + (cp & 0x3FF);
-
-          return String.fromCharCode(high, low);
-        }
-
-        function search() {
-          var value = input.value.replace(/^\s+|\s+$/g, "");
-          var cp;
-          var hex;
-
-          value = value.replace(/^U\+/i, "");
-          value = value.replace(/^0x/i, "");
-
-          if (!/^[0-9a-fA-F]{1,6}$/.test(value)) {
-            info.innerHTML = "请输入有效的十六进制编码。";
-            return;
+      
+          function search() {
+              var value = input.value.replace(/^\s+|\s+$/g, "");
+              var cp;
+              var hex;
+      
+              value = value.replace(/^U\+/i, "");
+              value = value.replace(/^0x/i, "");
+      
+              if (!/^[0-9a-fA-F]{1,6}$/.test(value)) {
+                  info.innerHTML = "请输入有效的十六进制编码。";
+                  return;
+              }
+      
+              cp = parseInt(value, 16);
+      
+              if (cp < 0x20000 || cp > 0x2A6DF) {
+                  info.innerHTML = "该码位不在 CJK 扩展 B 范围内。";
+                  return;
+              }
+      
+              hex = cp.toString(16).toUpperCase();
+      
+              while (hex.length < 5) {
+                  hex = "0" + hex;
+              }
+      
+              currentChar = fromCodePoint(cp);
+              currentCode = "U+" + hex;
+      
+              result.innerHTML = "";
+              result.appendChild(document.createTextNode(currentChar));
+      
+              info.innerHTML = currentCode;
           }
-
-          cp = parseInt(value, 16);
-
-          if (cp < 0x20000 || cp > 0x2A6DF) {
-            info.innerHTML = "此码位不在 CJK 扩展 B 范围内。";
-            return;
+      
+          /*
+           * 使用传统剪贴板方法，兼容旧版 Chrome。
+           */
+          function copyText(text, target) {
+              var textarea = document.createElement("textarea");
+              var success = false;
+      
+              textarea.value = text;
+              textarea.setAttribute("readonly", "readonly");
+              textarea.style.position = "absolute";
+              textarea.style.left = "-9999px";
+              textarea.style.top = "0";
+      
+              document.body.appendChild(textarea);
+              textarea.focus();
+              textarea.select();
+      
+              try {
+                  success = document.execCommand("copy");
+              } catch (e) {
+                  success = false;
+              }
+      
+              document.body.removeChild(textarea);
+      
+              target.innerHTML = success
+                  ? "复制成功。"
+                  : "复制失败，请手动选择文字。";
           }
-
-          hex = cp.toString(16).toUpperCase();
-
-          while (hex.length < 5) {
-            hex = "0" + hex;
+      
+          /*
+           * 为上传的本地字体建立 CSS @font-face。
+           * 不依赖 FontFace API。
+           */
+          function setUploadedFont(file) {
+              var url;
+              var style;
+              var generation;
+              var testFont;
+      
+              if (!window.URL || !URL.createObjectURL) {
+                  fontStatus.innerHTML = "当前浏览器不支持本地字体文件加载。";
+                  return;
+              }
+      
+              if (/\.ttc$/i.test(file.name)) {
+                  fontStatus.innerHTML =
+                      "TTC 是字体集合，Chrome 46 可能无法直接加载；" +
+                      "建议先转换为 TTF 或 WOFF。";
+                  return;
+              }
+      
+              generation = ++fontGeneration;
+              url = URL.createObjectURL(file);
+      
+              style = document.createElement("style");
+              style.type = "text/css";
+              style.appendChild(document.createTextNode(
+                  '@font-face {' +
+                  'font-family: "ExtBUploaded";' +
+                  'src: url("' + url + '");' +
+                  '}'
+              ));
+      
+              document.getElementsByTagName("head")[0].appendChild(style);
+      
+              /*
+               * 用 Canvas 测试字形是否能被浏览器解析。
+               * 注意：旧版浏览器的测试结果不一定可靠。
+               */
+              testFont = new Image();
+      
+              /*
+               * 延迟切换，避免旧字体资源被过早释放。
+               */
+              window.setTimeout(function () {
+                  if (generation !== fontGeneration) {
+                      if (style.parentNode) {
+                          style.parentNode.removeChild(style);
+                      }
+                      URL.revokeObjectURL(url);
+                      return;
+                  }
+      
+                  if (fontStyle && fontStyle.parentNode) {
+                      fontStyle.parentNode.removeChild(fontStyle);
+                  }
+      
+                  if (currentUrl) {
+                      URL.revokeObjectURL(currentUrl);
+                  }
+      
+                  fontStyle = style;
+                  currentUrl = url;
+      
+                  result.style.fontFamily = '"ExtBUploaded", "ExtB", serif';
+                  editor.style.fontFamily = '"ExtBUploaded", "ExtB", sans-serif';
+      
+                  fontStatus.innerHTML =
+                      "已选择字体：" + file.name +
+                      "（" + (file.size / 1024 / 1024).toFixed(2) + " MB）。" +
+                      "如果字形未显示，请检查浏览器控制台的字体解析错误。";
+              }, 100);
           }
-
-          currentChar = fromCodePoint(cp);
-          currentCode = "U+" + hex;
-
-          result.innerHTML = "";
-          result.appendChild(document.createTextNode(currentChar));
-
-          info.innerHTML = currentCode;
-        }
-
-        /*
-         * Chrome 46 兼容的传统剪贴簿方法。
-         */
-        function copyText(text, target) {
-          var textarea = document.createElement("textarea");
-          var success = false;
-
-          textarea.value = text;
-          textarea.setAttribute("readonly", "readonly");
-          textarea.style.position = "absolute";
-          textarea.style.left = "-9999px";
-          textarea.style.top = "0";
-
-          document.body.appendChild(textarea);
-          textarea.focus();
-          textarea.select();
-
-          try {
-            success = document.execCommand("copy");
-          } catch (e) {
-            success = false;
-          }
-
-          document.body.removeChild(textarea);
-
-          target.innerHTML = success
-            ? "复制成功。"
-            : "复制失败，请手动选取文字。";
-        }
-
-        document.getElementById("unicode-search").onclick = search;
-
-        input.onkeydown = function (event) {
-          event = event || window.event;
-
-          if (event.keyCode === 13) {
-            search();
-          }
-        };
-
-        document.getElementById("unicode-copy").onclick = function () {
-          if (currentChar) {
-            copyText(currentChar, info);
-          }
-        };
-
-        document.getElementById("unicode-copy-code").onclick = function () {
-          if (currentCode) {
-            copyText(currentCode, info);
-          }
-        };
-
-        /*
-         * 富文本框：清空。
-         */
-        document.getElementById("extb-editor-clear").onclick = function () {
-          editor.innerHTML = "";
-          editorInfo.innerHTML = "已清空。";
-          editor.focus();
-        };
-
-        /*
-         * 富文本框：复制纯文本。
-         * innerText 在旧版 Chrome 中可用。
-         */
-        document.getElementById("extb-editor-copy").onclick = function () {
-          var text = editor.innerText;
-
-          if (typeof text !== "string") {
-            text = editor.textContent || "";
-          }
-
-          copyText(text, editorInfo);
-        };
-
-        /*
-         * 不阻止预设贴上行为。
-         * 让浏览器处理手机或计算机的剪贴簿内容。
-         */
-        editor.onpaste = function () {
-          window.setTimeout(function () {
-            editorInfo.innerHTML = "文字已贴上。";
-          }, 0);
-        };
-
-        /*
-         * 初始查询。
-         */
-        search();
+      
+          /*
+           * 选择本地字体文件。
+           */
+          fontInput.onchange = function () {
+              var file = fontInput.files && fontInput.files[0];
+      
+              if (!file) {
+                  return;
+              }
+      
+              if (!/\.(ttf|otf|woff|woff2|ttc)$/i.test(file.name)) {
+                  fontStatus.innerHTML = "请选择 TTF、OTF、WOFF、WOFF2 或 TTC 文件。";
+                  return;
+              }
+      
+              setUploadedFont(file);
+          };
+      
+          /*
+           * 恢复默认字体。
+           */
+          fontReset.onclick = function () {
+              fontGeneration++;
+      
+              if (fontStyle && fontStyle.parentNode) {
+                  fontStyle.parentNode.removeChild(fontStyle);
+              }
+      
+              if (currentUrl) {
+                  URL.revokeObjectURL(currentUrl);
+              }
+      
+              fontStyle = null;
+              currentUrl = null;
+              fontInput.value = "";
+      
+              result.style.fontFamily = '"ExtB", serif';
+              editor.style.fontFamily = '"ExtB", sans-serif';
+      
+              fontStatus.innerHTML = "当前使用默认字体 extb.ttf";
+          };
+      
+          document.getElementById("unicode-search").onclick = search;
+      
+          input.onkeydown = function (event) {
+              event = event || window.event;
+      
+              if (event.keyCode === 13) {
+                  search();
+              }
+          };
+      
+          document.getElementById("unicode-copy").onclick = function () {
+              if (currentChar) {
+                  copyText(currentChar, info);
+              }
+          };
+      
+          document.getElementById("unicode-copy-code").onclick = function () {
+              if (currentCode) {
+                  copyText(currentCode, info);
+              }
+          };
+      
+          document.getElementById("extb-editor-clear").onclick = function () {
+              editor.innerHTML = "";
+              editorInfo.innerHTML = "已清空。";
+              editor.focus();
+          };
+      
+          document.getElementById("extb-editor-copy").onclick = function () {
+              var text = editor.innerText;
+      
+              if (typeof text !== "string") {
+                  text = editor.textContent || "";
+              }
+      
+              copyText(text, editorInfo);
+          };
+      
+          editor.onpaste = function () {
+              window.setTimeout(function () {
+                  editorInfo.innerHTML = "文字已粘贴。";
+              }, 0);
+          };
+      
+          search();
       }());
-
-    </script>
+      </script>
 
   </div>
 </body>
