@@ -11,7 +11,7 @@
   <link rel="icon" href="../favicon.ico">
   <style>
     #wrapper {
-      
+
       margin: 0 auto;
     }
 
@@ -47,6 +47,41 @@
       padding: 15px;
       color: #666;
     }
+
+    /* 悬浮控制面板 */
+    #auto-panel {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 999;
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 10px 12px;
+      text-align: center;
+    }
+
+    #auto-btn {
+      display: block;
+      width: 100%;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 4px;
+      background: #5BCEFA;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    #auto-btn.running {
+      background: #F5A9B8;
+    }
+
+    #auto-speed-text {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #666;
+    }
   </style>
 </head>
 
@@ -76,7 +111,11 @@
 
       <div id="status">正在加载更多...</div>
     </div>
-
+    <div id="auto-panel">
+      <button id="auto-btn" type="button">▶ 开始自动滚动</button>
+      <div id="auto-speed-text">速度：<span id="auto-speed-val">120</span> px/秒</div>
+      <input id="auto-speed" type="range" min="20" max="600" step="10" value="120">
+    </div>
     <script>
       var wrapper = document.getElementById('wrapper');
       var statusTip = document.getElementById('status');
@@ -131,6 +170,82 @@
             isWaiting = false;
             statusTip.innerHTML = '往下滑动自动加载';
           }, 300);
+        }
+      };
+      // ===== 自动滚动功能 =====
+      var autoBtn = document.getElementById('auto-btn');
+      var autoSpeed = document.getElementById('auto-speed');
+      var autoSpeedVal = document.getElementById('auto-speed-val');
+
+      var autoScrolling = false;
+      var autoSpeedPx = 120;   // 每秒滚动多少像素
+      var autoLastTime = 0;
+      var autoRemainder = 0;   // 累积还没滚掉的小数像素
+      var autoRafId = 0;
+
+      function autoStep(timestamp) {
+        if (!autoScrolling) return;
+
+        if (!autoLastTime) autoLastTime = timestamp;
+        var dt = timestamp - autoLastTime;
+        autoLastTime = timestamp;
+        if (dt > 100) dt = 100; // 防止切走标签页回来后突然猛跳
+
+        autoRemainder += autoSpeedPx * dt / 1000;
+        var move = Math.floor(autoRemainder);
+        if (move >= 1) {
+          autoRemainder -= move;
+          window.scrollBy(0, move);
+        }
+
+        autoRafId = requestAnimationFrame(autoStep);
+      }
+
+      function startAutoScroll() {
+        if (autoScrolling) return;
+        autoScrolling = true;
+        autoLastTime = 0;
+        autoRemainder = 0;
+        autoBtn.className = 'running';
+        autoBtn.innerHTML = '⏸ 停止自动滚动';
+        autoRafId = requestAnimationFrame(autoStep);
+      }
+
+      function stopAutoScroll() {
+        autoScrolling = false;
+        cancelAnimationFrame(autoRafId);
+        autoBtn.className = '';
+        autoBtn.innerHTML = '▶ 开始自动滚动';
+      }
+
+      autoBtn.onclick = function () {
+        if (autoScrolling) {
+          stopAutoScroll();
+        } else {
+          startAutoScroll();
+        }
+      };
+
+      autoSpeed.oninput = function () {
+        autoSpeedPx = parseInt(autoSpeed.value, 10);
+        autoSpeedVal.innerHTML = autoSpeedPx;
+      };
+
+      // 鍵盤控制：Enter 開始/停止，Esc 停止
+      document.onkeydown = function (e) {
+        e = e || window.event;
+        var key = e.keyCode || e.which;
+
+        if (key === 13) {            // 回車
+          if (e.preventDefault) e.preventDefault();
+          if (e.repeat) return;      // 按住不放時不要反覆切換
+          if (autoScrolling) {
+            stopAutoScroll();
+          } else {
+            startAutoScroll();
+          }
+        } else if (key === 27) {     // Esc
+          stopAutoScroll();
         }
       };
     </script>
