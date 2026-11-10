@@ -1,3 +1,4 @@
+
 name: Deploy static site to Pages
 
 on:
@@ -17,23 +18,47 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-24.04
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Prepare site (exclude big/unneeded files)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare site
         run: |
           mkdir _site
-          rsync -a --exclude='.git' --exclude='.github' \
-                   --exclude='_site' --exclude='*.iso' ./ _site/
 
-      - uses: actions/upload-pages-artifact@v3
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='_site' \
+            --exclude='*.iso' \
+            ./ _site/
+
+          echo "===== Site contents ====="
+          find _site -type f | head -50
+
+          echo "===== File count ====="
+          find _site -type f | wc -l
+
+          test "$(find _site -type f | wc -l)" -gt 0
+
+      - name: Upload Pages artifact
+        id: upload
+        uses: actions/upload-pages-artifact@v5
         with:
-          path: _site
+          name: github-pages
+          path: _site/
 
-      - id: deployment
+      - name: Verify artifact upload
+        run: |
+          echo "Artifact ID: ${{ steps.upload.outputs.artifact_id }}"
+
+      - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v5
         with:
-          timeout: 1800000   # 30 分鐘，單位毫秒
+          artifact_name: github-pages
