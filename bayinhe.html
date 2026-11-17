@@ -9,16 +9,25 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="favicon.ico" >
     <script>
-           var currentAudio = null;
+        // 同一時間只播放一首：任何一個 <audio> 開始播放時，暫停其他所有的
+        // play 事件不冒泡，所以必須用捕獲階段（第三個參數 true）在 document 上統一監聽
+        (function () {
+            var currentAudio = null;
 
-            function playAudio(audioId) {
-                var audio = document.getElementById(audioId);
-                    if (currentAudio) {
+            function onPlay(e) {
+                var target = e.target;
+                if (!target || target.tagName !== 'AUDIO') return;
+
+                if (currentAudio && currentAudio !== target) {
                     currentAudio.pause();
-                    }
-                    currentAudio = audio;
-                    audio.play();
-                    }
+                }
+                currentAudio = target;
+            }
+
+            if (document.addEventListener) {
+                document.addEventListener('play', onPlay, true);
+            }
+        })();
     </script>
 </head>
 <body>
@@ -38,68 +47,68 @@
         <h1>八音盒</h1>
         <div class="shengyiwu-list">
             <h3>此处有大部分地区和场景的战斗音乐：</h3>
-            <h3 ><span style="color: red;background-color: yellow;">注意：</span><span style="background-color: yellow;">在播放完一首曲子之后请务必关闭上一首曲子！</span></h3>
+            <h3><span style="background-color: yellow;">提示：点击播放后才会加载对应曲目，播放新曲目时会自动暂停上一首。</span></h3>
             <br>
 
             <p>蒙德：</p>
             <p>1：</p>
-            <audio id="mengde1" controls src="music/mengde1.mp3"></audio>
+            <audio id="mengde1" controls preload="none" src="music/mengde1.mp3"></audio>
           
             <p>2：</p>
-            <audio id="mengde2" controls src="music/mengde2.mp3"></audio>
+            <audio id="mengde2" controls preload="none" src="music/mengde2.mp3"></audio>
             
             <p>雪山：</p>
-            <audio id="liyue3" controls src="music/xueshan.mp3"></audio>
+            <audio id="xueshan" controls preload="none" src="music/xueshan.mp3"></audio>
             <p>璃月：</p>
             <p>1：</p>
-            <audio id="liyue1" controls src="music/liyue1.mp3"></audio>
+            <audio id="liyue1" controls preload="none" src="music/liyue1.mp3"></audio>
           
             <p>2：</p>
-            <audio id="liyue2" controls src="music/liyue2.mp3"></audio>
+            <audio id="liyue2" controls preload="none" src="music/liyue2.mp3"></audio>
           
             <p>3：</p>
-            <audio id="liyue3" controls src="music/liyue3.mp3"></audio>
+            <audio id="liyue3" controls preload="none" src="music/liyue3.mp3"></audio>
             <p>稻妻：</p>
             <p>1：</p>
-            <audio id="daoqi1" controls src="music/daoqi1.mp3"></audio>
+            <audio id="daoqi1" controls preload="none" src="music/daoqi1.mp3"></audio>
           
             <p>2：</p>
-            <audio id="daoqi2" controls src="music/daoqi2.mp3"></audio>
+            <audio id="daoqi2" controls preload="none" src="music/daoqi2.mp3"></audio>
           
             <p>3：</p>
-            <audio id="daoqi3" controls src="music/daoqi3.mp3"></audio>
+            <audio id="daoqi3" controls preload="none" src="music/daoqi3.mp3"></audio>
             <p>须弥：</p>
             <p>1：</p>
-            <audio id="xumi1" controls src="music/xumi1.mp3"></audio>
+            <audio id="xumi1" controls preload="none" src="music/xumi1.mp3"></audio>
           
             <p>2：</p>
-            <audio id="xumi2" controls src="music/xumi2.mp3"></audio>
+            <audio id="xumi2" controls preload="none" src="music/xumi2.mp3"></audio>
           
             <p>3：</p>
-            <audio id="xumi3" controls src="music/xumi3.mp3"></audio>
+            <audio id="xumi3" controls preload="none" src="music/xumi3.mp3"></audio>
             <p>枫丹：</p>
             <p>1：</p>
-            <audio id="fengdan1" controls src="music/fengdan1.mp3"></audio>
+            <audio id="fengdan1" controls preload="none" src="music/fengdan1.mp3"></audio>
           
             <p>2：</p>
-            <audio id="fengdan2" controls src="music/fengdan2.mp3"></audio>
+            <audio id="fengdan2" controls preload="none" src="music/fengdan2.mp3"></audio>
           
             <p>3：</p>
-            <audio id="fengdan3" controls src="music/fengdan3.mp3"></audio>
+            <audio id="fengdan3" controls preload="none" src="music/fengdan3.mp3"></audio>
             <p>渊下宫：</p>
             <p>1：</p>
-            <audio id="yuanxiagong1" controls src="music/yuanxiagong1.mp3"></audio>
+            <audio id="yuanxiagong1" controls preload="none" src="music/yuanxiagong1.mp3"></audio>
           
             <p>2：</p>
-            <audio id="yuanxiagong2" controls src="music/yuanxiagong2.mp3"></audio>
+            <audio id="yuanxiagong2" controls preload="none" src="music/yuanxiagong2.mp3"></audio>
             <p>冰本：</p>
-            <audio id="ice" controls src="music/ice.mp3"></audio>
+            <audio id="ice" controls preload="none" src="music/ice.mp3"></audio>
             <p>火本：</p>
-            <audio id="ice" controls src="music/fire.mp3"></audio>
+            <audio id="fire" controls preload="none" src="music/fire.mp3"></audio>
             <p>雷本：</p>
-            <audio id="ice" controls src="music/thunder.mp3"></audio>
+            <audio id="thunder" controls preload="none" src="music/thunder.mp3"></audio>
             <p>水本：</p>
-            <audio id="ice" controls src="music/water.mp3"></audio>
+            <audio id="water" controls preload="none" src="music/water.mp3"></audio>
           </div>  
     </div>
 </body>
