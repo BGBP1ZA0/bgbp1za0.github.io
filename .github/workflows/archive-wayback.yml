@@ -46,7 +46,7 @@ jobs:
           # DELAY: "3"
           # INCLUDE_ASSETS: "1"
           # MAX_RUNTIME_MIN: "300"
-        run: python3 .github/scripts/archive_to_wayback.py
+        run: python3 .github/workflows/scripts/archive_to_wayback.py
 
       # 無論成功失敗都保存進度
       - name: Save state
