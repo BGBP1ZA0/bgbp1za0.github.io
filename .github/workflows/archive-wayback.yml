@@ -1,0 +1,57 @@
+name: Archive site to Wayback Machine
+
+on:
+  schedule:
+    - cron: "17 19 * * *"   # UTC 19:17 = 台灣時間 03:17
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "忽略歷史記錄，強制重新提交所有 URL"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wayback-archive
+  cancel-in-progress: false   # 上一次沒跑完就排隊，不要互相打斷
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+
+      # 還原上次的備份記錄（用來判斷哪些文件有變化）
+      - name: Restore state
+        uses: actions/cache/restore@v4
+        with:
+          path: .cache/wayback-state.json
+          key: wayback-state-${{ github.run_id }}
+          restore-keys: wayback-state-
+
+      - name: Submit to web.archive.org
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+          IA_ACCESS_KEY: ${{ secrets.IA_ACCESS_KEY }}
+          IA_SECRET_KEY: ${{ secrets.IA_SECRET_KEY }}
+          FORCE: ${{ inputs.force && '1' || '' }}
+          # 以下都是可選參數，不設就用腳本默認值：
+          # MAX_URLS: "3000"
+          # PAGE_REFRESH_DAYS: "1"
+          # ASSET_REFRESH_DAYS: "30"
+          # WORKERS: "3"
+          # DELAY: "3"
+          # INCLUDE_ASSETS: "1"
+          # MAX_RUNTIME_MIN: "300"
+        run: python3 .github/scripts/archive_to_wayback.py
+
+      # 無論成功失敗都保存進度
+      - name: Save state
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/wayback-state.json
+          key: wayback-state-${{ github.run_id }}
